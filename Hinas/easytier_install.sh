@@ -110,12 +110,19 @@ config_write(){
 ps=""
     siteps=""
     stty erase '^H'  # 设置退格键
-    read -p $'\033[1;91m请输入该终端名称: \033[0m' name
+    read -p $'\033[1;91m请输入该终端名称(留空将使用机器名称): \033[0m' name
+	read -p $'\033[1;91m输入映射的内网段(实例:192.168.1.0/24留空将不做映射): \033[0m' neiwang
     stty sane  # 恢复终端设置
 if [ -z "$name" ]; then
 	s_name=""
 else
 	s_name="--hostname $name"
+fi
+
+if [ -z "$neiwang" ]; then
+	s_neiwang=""
+else
+	s_neiwang="-n $neiwang"
 fi
 
 cat <<-EOF > /etc/systemd/system/hinas.service
@@ -126,7 +133,7 @@ Wants=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/zhinan/zhinan -d $s_name --network-name hinas --network-secret hnas@123 -p tcp://public.easytier.top:11010
+ExecStart=/etc/zhinan/zhinan -d $s_name $s_neiwang --network-name hinas --network-secret hnas@123 -p tcp://public.easytier.top:11010
 
 [Install]
 WantedBy=multi-user.target
