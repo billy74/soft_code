@@ -80,7 +80,7 @@ GH_PROXY='https://ghp.ci/'
 
   # Download
   echo -e "\r\n${green}Downloading EasyTier $LATEST_VERSION ...${re}"
-  sudo -u root rm -rf /tmp/easytier_tmp_install.zip
+  rm -rf /tmp/easytier_tmp_install.zip
   curl -L ${GH_PROXY}https://github.com/EasyTier/EasyTier/releases/latest/download/easytier-linux-${ARCH}-${LATEST_VERSION}.zip -o /tmp/easytier_tmp_install.zip $CURL_BAR
   # Unzip resource
   echo -e "\r\n${green}Unzip resource ...${re}"
@@ -95,6 +95,7 @@ GH_PROXY='https://ghp.ci/'
     echo -e "${red} Download failed! ${re}"
     exit 1
   fi
+  rm -rf /tmp/easytier_tmp_install.zip
 #安装结束
 if [ -z "$1" ]; then
 	s_name=""
