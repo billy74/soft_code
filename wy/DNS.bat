@@ -1,8 +1,10 @@
 @echo off
  
 :start
-echo 1:ÉèÖÃ°¢ÀïÔÆDNS 2:ÉèÖÃÓÊ¼şDNS 3:ÍË³ö
-set /p var=ÇëÑ¡Ôñ
+echo 1:è®¾ç½®é˜¿é‡Œäº‘DNS
+echo 2:è®¾ç½®é‚®ä»¶DNS
+echo 3:é€€å‡º
+set /p var=è¯·é€‰æ‹©
 if %var%==1 goto opt1
 if %var%==2 goto opt2
 if %var%==3 goto opt3
@@ -10,25 +12,25 @@ if %var%==3 goto opt3
 :opt1
 cls
  
-echo ÉèÖÃÖ÷DNS 223.5.5.5  
-cmd /c netsh interface ip set dns name="ÒÔÌ«Íø" source=static addr=223.5.5.5
-echo ÉèÖÃ¸±DNS 223.6.6.6
-cmd /c netsh interface ip add dns name="ÒÔÌ«Íø" addr=223.6.6.6 index=2
+echo è®¾ç½®ä¸»DNS 223.5.5.5  
+cmd /c netsh interface ip set dns name="ä»¥å¤ªç½‘" source=static addr=223.5.5.5
+echo è®¾ç½®å‰¯DNS 223.6.6.6
+cmd /c netsh interface ip add dns name="ä»¥å¤ªç½‘" addr=223.6.6.6 index=2
 ipconfig /flushdns
  
-echo Íê³É
+echo å®Œæˆ
 goto start
  
 :opt2
 cls
  
-echo ÉèÖÃÖ÷DNS 10.0.9.150 
-cmd /c netsh interface ip set dns name="ÒÔÌ«Íø" source=static addr=10.0.9.150
-echo ÉèÖÃ¸±DNS 10.0.1.150
-cmd /c netsh interface ip add dns name="ÒÔÌ«Íø" addr=10.0.1.150 index=2
+echo è®¾ç½®ä¸»DNS 10.0.9.150 
+cmd /c netsh interface ip set dns name="ä»¥å¤ªç½‘" source=static addr=10.0.9.150
+echo è®¾ç½®å‰¯DNS 10.0.1.150
+cmd /c netsh interface ip add dns name="ä»¥å¤ªç½‘" addr=10.0.1.150 index=2
 ipconfig /flushdns
  
-echo Íê³É
+echo å®Œæˆ
 goto start
 
 :opt3
