@@ -103,8 +103,8 @@ else
 	s_name="--hostname $1"
 fi
 
-current_dir=$(pwd)
-cat <<-EOF > $current_dir/hinas.service
+
+cat <<-EOF > /$INSTALL_PATH/hinas.service
 [Unit]
 Description=EasyTier Service
 After=network.target syslog.target
@@ -120,12 +120,14 @@ EOF
 
 
 echo "正在写出配置文件"
-sudo -u root mv ./hinas.service /etc/systemd/system/hinas.service
-echo "重启服务"
+sudo -u root mv $INSTALL_PATH/hinas.service /etc/systemd/system/hinas.service
+echo "写出配置文件完成 准备重启配置"
 sudo -u root systemctl daemon-reload
+echo "重启配置完成 准备重启服务"
 sudo -u root systemctl restart hinas.service
-echo "当前网络"
+echo "重启服务完成"
 curl ping0.cc/geo
+echo "显示当前网络"
 rm $0
 fi
 
