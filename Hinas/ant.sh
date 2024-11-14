@@ -13,7 +13,7 @@ if [ $# -ne 1 ]; then
 else
 
 INSTALL_PATH="/etc/zhinan"
-
+sudo -u root mkdir $INSTALL_PATH
 # check if unzip is installed
 if ! command -v unzip >/dev/null 2>&1; then
   echo -e "\r\n${red}Error: unzip is not installed${re}\r\n"
@@ -112,7 +112,7 @@ Wants=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/zhinan/zhinan -d $s_name --network-name hinas --network-secret hnas@123 -p tcp://public.easytier.top:11010
+ExecStart=$INSTALL_PATH/zhinan -d $s_name --network-name hinas --network-secret hnas@123 -p tcp://public.easytier.top:11010
 
 [Install]
 WantedBy=multi-user.target
@@ -121,7 +121,9 @@ EOF
 
 echo "正在写出配置文件"
 sudo -u root mv $INSTALL_PATH/hinas.service /etc/systemd/system/hinas.service
-echo "写出配置文件完成 准备重启配置"
+echo "写出配置文件完成 正在配置开机启动"
+sudo -u root systemctl enable hinas.service
+echo "开机启动已完成 正在重载服务"
 sudo -u root systemctl daemon-reload
 echo "重启配置完成 准备重启服务"
 sudo -u root systemctl restart hinas.service
