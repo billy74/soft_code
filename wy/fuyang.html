@@ -12,7 +12,7 @@
     <script src="https://fastly.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-    <video id="m3u8Player" controls autoplay>
+    <video id="mp4Player" controls autoplay>
         <source src="https://soft.hi-nas.us.kg/wy/5813612f4e918a4c4bd210aeeb3b0a8a.mp4" type="application/x-mpegURL">
     </video>
     
@@ -21,15 +21,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             var m3u8Url = "https://soft.hi-nas.us.kg/wy/5813612f4e918a4c4bd210aeeb3b0a8a.mp4";
             var m3u8Player = document.getElementById('m3u8Player');
-
-            if (Hls.isSupported()) {
-                var hls = new Hls();
-                hls.loadSource(m3u8Url);
-                hls.attachMedia(m3u8Player);
-            } else if (m3u8Player.canPlayType('application/vnd.apple.mpegurl')) {
-                m3u8Player.src = m3u8Url;
-            }
-            
             var mp4Url = "https://soft.hi-nas.us.kg/wy/5813612f4e918a4c4bd210aeeb3b0a8a.mp4";
             var mp4Player = document.getElementById('mp4Player');
             mp4Player.src = mp4Url;
