@@ -2,27 +2,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<meta http-equiv="x-ua-compatible" content="IE=edge" >
-<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
-<title>阜阳消防</title>
-<link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.2/skins/default/aliplayer-min.css" />
-<script type="text/javascript" charset="utf-8" src="//g.alicdn.com/de/prismplayer/2.7.2/aliplayer-min.js"></script>
+    <title>阜阳消防</title>
+    <style>
+        #m3u8Player, #mp4Player {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+    <script src="https://fastly.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
-<div  id="a1"></div>
-<script type="text/javascript" src="http://img.mzfree.top/ckplayer/ckplayer.js" charset="utf-8"></script>
-<script type="text/javascript">
-    var flashvars={
-        f:'https://soft.hi-nas.us.kg/wy/5813612f4e918a4c4bd210aeeb3b0a8a.mp4',
-		p:1,//自动开始播放
-		e:1,//循环播放
-        c:0,
-        loaded:'loadedHandler',
-		i:'https://www.superbed.cn/pic/5bf3a7b6c4ff9e1b262451a0',
-		my_url:encodeURIComponent(window.location.href)
-    };
-    var video=['https://soft.hi-nas.us.kg/wy/5813612f4e918a4c4bd210aeeb3b0a8a.mp4->video/mp4'];
-    CKobject.embed('http://img.mzfree.top/ckplayer/ckplayer.swf','a1','ckplayer_a1','600','400',false,flashvars,video);
-</script>
+<body>
+    <video id="m3u8Player" controls autoplay>
+        <source src="http://file.ahrsf.com:81/nas/video/m3u8/202301/06/d7c7d5ae567a/playlist.m3u8" type="application/x-mpegURL">
+    </video>
+    
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var m3u8Url = "https://soft.hi-nas.us.kg/wy/5813612f4e918a4c4bd210aeeb3b0a8a.mp4";
+            var m3u8Player = document.getElementById('m3u8Player');
+
+            if (Hls.isSupported()) {
+                var hls = new Hls();
+                hls.loadSource(m3u8Url);
+                hls.attachMedia(m3u8Player);
+            } else if (m3u8Player.canPlayType('application/vnd.apple.mpegurl')) {
+                m3u8Player.src = m3u8Url;
+            }
+            
+            var mp4Url = "https://soft.hi-nas.us.kg/wy/5813612f4e918a4c4bd210aeeb3b0a8a.mp4";
+            var mp4Player = document.getElementById('mp4Player');
+            mp4Player.src = mp4Url;
+        });
+    </script>
+</body>
 </html>
