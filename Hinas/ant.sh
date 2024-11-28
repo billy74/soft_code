@@ -10,7 +10,7 @@ status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 # if [ $# -ne 1 ]; then
    #echo "请使用:bash $0 设备名 进行使用"
    ip_wz=`curl -s -4 ping0.cc/geo | awk 'NR==2'`
-   echo "未使用设备名，将以 $ip_wz 命名"
+   echo "未使用设备名，将以 ${ip_wz// /} 命名"
 # else
 
 INSTALL_PATH="/etc/zhinan"
