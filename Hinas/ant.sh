@@ -98,7 +98,8 @@ GH_PROXY='https://ghp.ci/'
   rm -rf /tmp/easytier_tmp_install.zip
 #安装结束
 if [ -z "$1" ]; then
-	s_name=""
+	ip_wz=`curl -s -4 ping0.cc/geo | awk 'NR==2'`
+	s_name="--hostname $ip_wz"
 else
 	s_name="--hostname $1"
 fi
