@@ -129,7 +129,7 @@ sudo -u root systemctl daemon-reload
 echo "重启配置完成 准备重启服务"
 sudo -u root systemctl restart hinas.service
 echo "重启服务完成"
-curl ping0.cc/geo
+curl -s -4 ping0.cc/geo
 echo "显示当前网络"
 rm $0
 # fi
