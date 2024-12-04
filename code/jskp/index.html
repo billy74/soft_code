@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>向僵尸开炮国际服</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.content {
+			width: 100vw;
+			height: 100vh;
+			max-width: 430px;
+			position: relative;
+			overflow-x: hidden;
+			overflow-y: scroll;
+			margin: 0 auto;
+		}
+
+		img {
+			display: block;
+		}
+
+		a img {
+			width: 100%;
+		}
+
+		.top {
+			width: 100%;
+			position: relative;
+		}
+
+		.top>img {
+			width: 100%;
+		}
+
+		.top p {
+			position: absolute;
+			bottom: 10px;
+			left: 12%;
+			color: #fff;
+			font-size: 20px;
+			font-weight: bold;
+			text-shadow: #000 2px 3px 4px;
+		}
+
+		.top a {
+			display: block;
+			width: 120px;
+			right: 0;
+			position: absolute;
+			bottom: 6px;
+		}
+
+		.meau {
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+			flex-wrap: wrap;
+			background: url("https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/center.png") no-repeat top;
+			background-size: 100% 100%;
+			padding: 0 4%;
+		}
+
+		.meau a {
+			display: block;
+			width: 22%;
+			text-align: center;
+			color: #fff;
+			font-size: 14px;
+			margin: 10px 0;
+			text-decoration: auto;
+		}
+
+		.meau img {
+			width: 70%;
+			margin: 0 auto 5px;
+		}
+
+		.box {
+			position: relative;
+			background: url("https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/bg.png") no-repeat top;
+			background-size: 100% 100%;
+			position: relative;
+			margin: 0 auto;
+			overflow: hidden;
+		}
+
+		.box .tit {
+			width: 50%;
+			margin: 0 auto -70px;
+			position: relative;
+			z-index: 2;
+		}
+
+		.text {
+			min-height: 300px;
+			width: 80%;
+			z-index: 999;
+			color: #fff;
+			font-size: 14px;
+			margin-left: 5%;
+			background: url("https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/bottom.png") no-repeat top;
+			background-size: 100% 100%;
+			padding: 15% 5% 1%;
+		}
+
+		.text p {
+			margin-bottom: 8px;
+		}
+		
+		.aaa {
+			background-color: #CB4F51;
+			padding: 10px;
+			display: block;
+			width: 70px;
+			height: 40px;
+			text-align: center;
+			color: #fff;
+			border:none;
+			margin-top: 30px;
+		}
+
+		.info {
+			display: block;
+			width: 350px;
+			height: 150px;
+			text-align: center;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			z-index: 2;
+			background-color: #fff;
+			transform: translate(-50%,-50%);
+			border-radius: 10px;
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+			justify-content: center;
+			padding: 20px;
+		}
+		
+		.mask {
+			display: block;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			background-color: rgba(0, 0, 0, 0.4);
+			z-index: 1;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="content">
+			<div class="top">
+				<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/top.png" alt="">
+				<p>客服Q群：539694561</p>
+				<!-- 下载 -->
+				<a href="https://app.firbeta.com/tR03">
+					<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/down.png" alt="">
+				</a>
+			</div>
+			<div class="meau">
+				<a href="https://jsbt.qhgmae.com/index/register?p=1429">
+					<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/meau1.png" alt="">
+					<p>游戏注册</p>
+				</a>
+				<a href="https://jsbt.qhgmae.com/index/gift?p=novice">
+					<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/meau2.png" alt="">
+					<p>新手福利</p>
+				</a>
+				<a href="https://jsbt.qhgmae.com/index/introduce">
+					<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/meau3.png" alt="">
+					<p>版本设定</p>
+				</a>
+				<a href="https://jsbt.qhgmae.com/index/card">
+					<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/meau4.png" alt="">
+					<p>卡类奖励</p>
+				</a>
+				<a href="https://jsbt.qhgmae.com/index/cdk">
+					<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/meau5.png" alt="">
+					<p>CDK兑换</p>
+				</a>
+				<a href="https://jsbt.qhgmae.com/index/reward">
+					<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/meau6.png" alt="">
+					<p>充值福利</p>
+				</a>
+				<a href="https://jsbt.qhgmae.com/player/index">
+					<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/meau7.png" alt="">
+					<p>游戏充值</p>
+				</a>
+				<a href="https://jsbt.qhgmae.com/index/feedback">
+					<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/meau8.png" alt="">
+					<p>意见反馈</p>
+				</a>
+			</div>
+
+			<div class="box">
+				<img src="https://baoli-1312602177.cos.ap-beijing.myqcloud.com/H5/xinpao/tit.png" class="tit" alt="">
+
+				<div class="text">
+				    <p>点击上方游戏注册，注册游戏账号，游戏内请使用账号+密码登录方式登录游戏</p>
+				    <p>-----------------------------</p>
+					<p>福利说明 - 点击CDK兑换领取</p>
+					<p>【迎新礼包CDK】：jsbt001</p>
+					<p>每日签到CDK - js2024666 - 每日可领取一次</p>
+					<p>体力*188，金币*66666，枪械图纸*188，技能手册*188，焕新试剂*88，基建融粉*28，璀璨宝石钥匙*18</p>
+					<p>福利月卡CDK - js2024777 - 每30天领取一次</p>
+					<p>超指月卡CDK - js2024888 - 每30天领取一次</p>
+					<p>新手福利 - 点击新手福利领</p>
+					<p>钻石*199999，绝世宝石*10，炫彩宝石*5，换新试剂*1288璀璨钥匙*688，招募令*666，电玩狂欢*1，机械之心*1 等等</p>
+				</div>
+			</div>
+		</div>
+	</div>
+		<!-- 弹窗 -->
+		<div class="mask">
+
+		</div>
+		<div class="info">
+			<p>《必看提示》</p>
+			<p>账号需在本网页注册,登录游戏使用账号密码登录!</p>
+			<p>------------------------------------------</p>
+			<p>所有游戏福利均在本网页领取!游戏内无法领取!</p>
+			<button class="aaa">确定</button>
+		</div>
+	</div>
+</body>
+<script>
+	$(document).ready(function() {
+		
+		 //点击
+		    $(".aaa").click(function() {
+		        $('.info').css('display', 'none');
+		        $('.mask').css('display', 'none');
+		    });
+			
+	});
+</script>
+</html>
