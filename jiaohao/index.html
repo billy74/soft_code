@@ -1,0 +1,379 @@
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<base href=".">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>叫号系统</title>
+<link href="./files/all.min.css" rel="stylesheet">
+<link href="./files/Sortable.min.css" rel="stylesheet">
+<style>
+body {font-family: 'Arial', sans-serif;background-color: #f0f0f0;margin: 0;padding: 0;display: flex;height: 100vh;overflow: hidden;}
+.left-panel, .right-panel {padding: 20px;box-sizing: border-box;transition: all 0.3s ease;}
+.left-panel {width: 60%;background-color: white;display: flex;flex-direction: column;justify-content: space-between;align-items: center;}
+.right-panel {width: 40%;background-color: #ecf0f1;overflow-y: auto;display: flex;flex-direction: column;position: relative;}
+h1, h2 {color: #2c3e50;text-align: center;}
+.current-info {display: flex;flex-direction: column;align-items: center;justify-content: center;flex-grow: 1;}
+#currentPerson {font-size: 120px;color: #3498db;margin: 20px 0;text-align: center;word-wrap: break-word;max-width: 100%;}
+#currentPerson .label {font-size: 60px;color: #2c3e50;}
+#nextPerson {font-size: 40px;margin: 10px 0;text-align: center;}
+#nextPerson .next-name {color: #f39c12;}
+.button-group {display: flex;justify-content: center;margin-top: 20px;flex-wrap: wrap;}
+button {background-color: #3498db;color: white;border: none;padding: 15px;font-size: 20px;cursor: pointer;transition: background-color 0.3s;margin: 5px;border-radius: 50%;width: 50px;height: 50px;}
+button:hover {background-color: #2980b9;}
+#shuffleButton {background-color: #2ecc71;}
+#shuffleButton:hover {background-color: #27ae60;}
+#speakButton {background-color: #9b59b6;}
+#speakButton:hover {background-color: #8e44ad;}
+#queueList {margin-top: 20px;column-count: 4;column-gap: 20px;flex-grow: 1;}
+.queue-item {background-color: white;margin: 0 0 10px;padding: 10px;border-radius: 5px;transition: all 0.3s ease;break-inside: avoid-column;cursor: move;}
+.queue-item:hover {background-color: #e0e0e0;}
+.completed {color: #27ae60;font-weight: bold;}
+#fileInput {display: none;}
+#message {margin-top: 20px;font-size: 18px;color: #e74c3c;text-align: center;}
+.right-panel-buttons {display: flex;justify-content: center;margin-bottom: 20px;}
+.right-panel-buttons button {margin: 0 10px;}
+.sortable-ghost {opacity: 0.4;}
+#shortcutInfo {font-size: 14px;color: #7f8c8d;text-align: center;margin-top: 10px;}
+#customizeButton {background-color: #e67e22;}
+#customizeButton:hover {background-color: #d35400;}
+.customize-form {display: none;margin-top: 20px;padding: 20px;background-color: #fff;border-radius: 5px;box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+.customize-form input, .customize-form select {width: 100%;padding: 10px;margin-bottom: 10px;border: 1px solid #ddd;border-radius: 4px;}
+.customize-form button {width: 100%;border-radius: 4px;}
+#signature {position: fixed;bottom: 10px;right: 10px;font-size: 12px;color: #95a5a6;cursor: help;}
+#systemTitle {font-size: 48px;margin-top: 20px;margin-bottom: 30px;border: none;background-color: transparent;text-align: center;color: #2c3e50;width: 100%;}
+#systemTitle:focus {outline: none;border-bottom: 2px solid #3498db;}
+#autoCallInfo {font-size: 14px;color: #7f8c8d;text-align: center;margin-top: 10px;}
+.tooltip {position: relative;display: inline-block;}
+.tooltip .tooltiptext {visibility: hidden;width: 200px;background-color: #555;color: #fff;text-align: center;border-radius: 6px;padding: 5px;position: absolute;z-index: 1;bottom: 125%;left: 50%;margin-left: -100px;opacity: 0;transition: opacity 0.3s;}
+.tooltip:hover .tooltiptext {visibility: visible;opacity: 1;}
+#resetButton {background-color: #e74c3c;}
+#resetButton:hover {background-color: #c0392b;}
+#togglePanelButton {position: fixed;top: 50%;right: 0;transform: translateY(-50%);background-color: #34495e;color: white;border: none;padding: 10px 5px;cursor: pointer;transition: background-color 0.3s, right 0.3s;z-index: 1000;border-radius: 5px 0 0 5px;width: 20px;height: 60px;}
+#togglePanelButton:hover {background-color: #2c3e50;}
+.left-panel.expanded {width: 100%;}
+.right-panel {transition: width 0.3s, padding 0.3s;}
+.right-panel.hidden {width: 0;padding: 0;overflow: hidden;}
+.left-panel {transition: width 0.3s;}
+</style>
+</head>
+<body>
+<div class="left-panel">
+<input type="text" id="systemTitle" value="软资源叫号系统">
+<div class="current-info">
+<div id="currentPerson"><span class="label">当前：</span>准备开始</div>
+<div id="nextPerson"></div>
+</div>
+<div class="button-group">
+<button id="nextButton" title="下一位" disabled=""><svg t="1725106504121" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3150" width="20" height="20"><path d="M276.755 942.936c28.497 29.315 74.739 29.315 103.307 0l367.236-378.011c28.483-29.367 28.483-76.982 0-106.291l-367.236-377.997c-28.562-29.367-74.806-29.367-103.307 0-28.546 29.325-28.546 76.929 0 106.304l315.6 324.841-315.599 324.803c-28.545 29.367-28.544 76.973 0 106.356l0 0z" fill="#ffffff" p-id="3151"></path></svg></button>
+            <button id="speakButton" title="语音播报"><svg t="1725106974075" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12287" width="20" height="20"><path d="M515.041727 670.617766c91.584167 0 166.095647-74.504255 166.095647-166.095646V229.350568c0-91.584167-74.51148-166.095647-166.095647-166.095647-91.598617 0-166.102872 74.51148-166.102871 166.095647V504.52212c0 91.591392 74.504255 166.095647 166.102871 166.095646z" fill="#ffffff" p-id="12288"></path><path d="M801.643237 874.001665H558.391759v-45.423608c161.507768-21.313766 286.60151-159.788217 286.60151-327.01819a43.350032 43.350032 0 0 0-86.700064 0c0 134.124998-109.12648 243.251478-243.258703 243.251479-134.124998 0-243.244253-109.12648-243.244253-243.251479a43.350032 43.350032 0 0 0-86.700063 0c0 167.229972 125.100967 305.711649 286.601509 327.01819v45.423608H228.440217a43.350032 43.350032 0 0 0 0 86.700064h573.20302a43.350032 43.350032 0 0 0 0-86.700064z" fill="#ffffff" p-id="12289"></path></svg></button>
+            <button id="customizeButton" title="自定义"><svg t="1725107034171" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="13400" width="20" height="20"><path d="M576 64h-128l1.536 110.336a343.136 343.136 0 0 0-132.192 54.624l-70.4-70.4-88.384 88.384 70.4 70.4a341.568 341.568 0 0 0-54.624 132.16L64 448v128l110.336-1.536a343.136 343.136 0 0 0 54.624 132.192l-70.4 70.4 88.384 88.384 70.4-70.4a341.056 341.056 0 0 0 132.192 54.656L448 960h128l-1.536-110.336a342.688 342.688 0 0 0 132.192-54.656l70.4 70.4 88.384-88.384-70.4-70.4a341.696 341.696 0 0 0 54.624-132.192L960 576v-128l-110.336 1.408a342.784 342.784 0 0 0-54.624-132.16l70.4-70.4-88.384-88.384-70.4 70.4a341.696 341.696 0 0 0-132.192-54.624V74.688z m-64 672.768A224.832 224.832 0 1 1 736.768 512 225.12 225.12 0 0 1 512 736.768z m0 0" fill="#ffffff" p-id="13401"></path></svg></button>
+</div>
+<div id="shortcutInfo">快捷键：→ (右箭头) 下一位, S 语音播报</div>
+<div id="autoCallInfo">手动叫号模式</div>
+<div class="customize-form">
+<input type="text" id="roomNameInput" placeholder="请姓名（ ）">
+<select id="callModeSelect">
+<option value="manual">手动叫号</option>
+<option value="auto">自动叫号</option>
+</select>
+<input type="number" id="autoCallIntervalInput" placeholder="自动叫号间隔（分钟）" min="1">
+<button id="saveCustomization">保存设置</button>
+</div>
+</div>
+<div class="right-panel">
+<button id="togglePanelButton" style="right: 40%;"><svg t="1725784716287" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6411" width="15" height="15"><path d="M390.784 283.562667l30.165333 30.208a10.666667 10.666667 0 0 1 0 15.061333L269.781333 480H469.333333a10.666667 10.666667 0 0 1 10.666667 10.666667v42.666666a10.666667 10.666667 0 0 1-10.666667 10.666667H269.781333l151.168 151.168a10.666667 10.666667 0 0 1 1.706667 12.8l-1.706667 2.304-30.165333 30.165333a10.666667 10.666667 0 0 1-15.104 0l-190.72-190.72a53.333333 53.333333 0 0 1 0-75.434666l190.72-190.72a10.666667 10.666667 0 0 1 15.104 0z m258.048 0l190.72 190.72a53.333333 53.333333 0 0 1 0 75.434666l-190.72 190.72a10.666667 10.666667 0 0 1-15.061333 0l-30.208-30.208a10.666667 10.666667 0 0 1 0-15.061333l151.168-151.168H554.666667a10.666667 10.666667 0 0 1-10.666667-10.666667v-42.666666a10.666667 10.666667 0 0 1 10.666667-10.666667h200.064l-151.168-151.168a10.666667 10.666667 0 0 1-1.706667-12.8l1.706667-2.261333 30.208-30.208a10.666667 10.666667 0 0 1 15.061333 0z" fill="#ffffff" p-id="6412"></path></svg></button>
+<h2>人员列表</h2>
+<div class="right-panel-buttons">
+<button id="importButton" title="导入名单"><svg t="1725106848421" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9035" width="20" height="20"><path d="M601.152 708.288 400 568 344 568l0 112-224 0 0 112 224 0 0 112L400 904l201.152-140.288C624 749.504 624 722.496 601.152 708.288L601.152 708.288zM891.264 331.2 638.656 76.864C630.528 68.608 619.456 64 607.936 64L232 64C196.032 64 176 83.712 176 120L176 512 288 512 288 176l280 0 0 168c0 24.192 32 56 56 56l168 0 0.768 448L624 848 624 960l224 0c35.968 0 56-19.712 56-56L904 362.176C904 350.528 899.392 339.392 891.264 331.2L891.264 331.2z" p-id="9036" fill="#ffffff"></path></svg></button>
+            <button id="shuffleButton" title="随机排序"><svg t="1725106896908" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10128" width="20" height="20"><path d="M752.89 356.741h57.565v97.06L957.44 283.095l-146.939-167.04v110.817h-57.559c-164.813 0-272.317 127.002-354.427 239.053-73.697 100.72-137.492 195.748-240.292 195.748H66.56v129.92h91.617c164.813 0 257.813-135.014 339.968-247.07 73.698-100.773 151.7-187.782 254.746-187.782z m-446.632 74.291l21.335-28.907c17.515-23.803 35.835-49.045 55.777-74.092-59.044-57.267-130.12-99.533-225.193-99.533H66.56v129.874s24.699-1.239 91.617 0c64.784 1.434 105.416 28.954 148.08 72.658zM810.5 666.665h-57.559c-62.766 0-125.42-36.373-170.312-84.629a929.229 929.229 0 0 1-13.557 18.463c-19.702 26.87-40.832 55.824-64.144 84.337 60.585 61.368 148.383 111.703 248.013 111.703h57.56v111.406L957.44 736.947 810.501 570.214v96.451z" p-id="10129" fill="#ffffff"></path></svg></button>
+            <button id="resetButton" title="重置列表"><svg t="1725106928708" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11203" width="20" height="20"><path d="M512.034377 0a512 512 0 0 1 296.813714 929.206857l-87.113142-117.540571a365.714286 365.714286 0 1 0-426.569143-5.12l84.041143-109.348572L512.034377 1024H128.034377l77.970286-101.595429-10.971429-8.338285A512 512 0 0 1 512.034377 0z" fill="#ffffff" p-id="11204"></path></svg></button>
+</div>
+<div id="queueList"></div>
+<div id="message" style="display: none;"></div>
+<input type="file" id="fileInput" accept=".txt">
+</div>
+<script src="./files/jquery.min.js"></script>
+<script src="./files/Sortable.min.js"></script>
+<script>
+let queue = [];
+let completedPersons = [];
+let currentIndex = -1;
+let isProcessing = false;
+let isShuffled = false;
+let roomName = "面试";
+let callMode = "manual";
+let autoCallInterval = 0;
+let autoCallTimeoutId = null;
+let originalQueue = [];
+let isPanelHidden = false;
+
+function updateDisplay() {
+    const queueList = $('#queueList');
+    queueList.empty();
+    
+    queue.forEach((person, index) => {
+        const item = $('<div>').addClass('queue-item').text(`${index + 1}. ${person}`).attr('data-index', index);
+        queueList.append(item);
+    });
+    
+    completedPersons.forEach((person) => {
+        const item = $('<div>').addClass('queue-item completed').text(person);
+        queueList.append(item);
+    });
+    
+    if (currentIndex >= 0 && currentIndex < queue.length) {
+        $('#currentPerson').html(`<span class="label">当前：</span>${queue[currentIndex]}`);
+        
+        if (currentIndex + 1 < queue.length) {
+            $('#nextPerson').html(`下一位：<span class="next-name">${queue[currentIndex + 1]}</span>`);
+        } else {
+            $('#nextPerson').text('');
+        }
+    } else {
+        $('#currentPerson').html('<span class="label">当前：</span>准备开始');
+        $('#nextPerson').text('');
+    }
+    
+    $('#nextButton').prop('disabled', currentIndex >= queue.length - 1 || isProcessing);
+    
+    if (isShuffled) {
+        $('#message').text('已随机排序，请注意自己的顺序').show();
+    } else {
+        $('#message').text('').hide();
+    }
+    
+    updateAutoCallInfo();
+}
+
+function updateAutoCallInfo() {
+    if (callMode === 'auto' && autoCallInterval > 0) {
+        $('#autoCallInfo').text(`自动叫号模式：每${autoCallInterval}分钟叫号一次`);
+    } else {
+        $('#autoCallInfo').text('手动叫号模式');
+    }
+}
+
+function speakText(text) {
+    return new Promise(resolve => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.onend = resolve;
+        speechSynthesis.speak(utterance);
+    });
+}
+
+async function speakOnce(text) {
+    await speakText(text);
+}
+
+async function nextPerson() {
+    if (isProcessing) return;
+    
+    if (currentIndex < queue.length - 1) {
+        isProcessing = true;
+        
+        if (currentIndex >= 0) {
+            completedPersons.push(queue[currentIndex]);
+            queue.splice(currentIndex, 1);
+        }
+        
+        currentIndex = 0;
+        updateDisplay();
+        
+        const personName = queue[currentIndex];
+        await speakOnce(`请${personName}${roomName}。`);
+        
+        isProcessing = false;
+        updateDisplay();
+        
+        if (callMode === 'auto') {
+            scheduleNextCall();
+        }
+    } else {
+        alert('所有人员已完成');
+        stopAutoCalling();
+    }
+}
+
+function scheduleNextCall() {
+    if (autoCallTimeoutId) {
+        clearTimeout(autoCallTimeoutId);
+    }
+    
+    autoCallTimeoutId = setTimeout(nextPerson, autoCallInterval * 60 * 1000);
+}
+
+function stopAutoCalling() {
+    if (autoCallTimeoutId) {
+        clearTimeout(autoCallTimeoutId);
+        autoCallTimeoutId = null;
+    }
+}
+
+function shuffleQueue() {
+    for (let i = queue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [queue[i], queue[j]] = [queue[j], queue[i]];
+    }
+    
+    currentIndex = -1;
+    isShuffled = true;
+    updateDisplay();
+}
+
+async function speakCurrent() {
+    if (isProcessing) return;
+    
+    if (currentIndex >= 0 && currentIndex < queue.length) {
+        isProcessing = true;
+        const personName = queue[currentIndex];
+        await speakOnce(`请${personName}${roomName}。`);
+        isProcessing = false;
+        updateDisplay();
+    }
+}
+
+function resetQueue() {
+    if (confirm("确定要重置人员列表吗？这将清除所有已完成的记录。")) {
+        queue = [...originalQueue];
+        completedPersons = [];
+        currentIndex = -1;
+        isShuffled = false;
+        stopAutoCalling();
+        updateDisplay();
+        initSortable();
+    }
+}
+
+function togglePanel() {
+    isPanelHidden = !isPanelHidden;
+    $('.right-panel').toggleClass('hidden', isPanelHidden);
+    $('.left-panel').toggleClass('expanded', isPanelHidden);
+    $('#togglePanelButton i').toggleClass('fa-chevron-left', !isPanelHidden);
+    $('#togglePanelButton i').toggleClass('fa-chevron-right', isPanelHidden);
+    
+    if (isPanelHidden) {
+        $('#togglePanelButton').css('right', '0');
+    } else {
+        $('#togglePanelButton').css('right', '40%');
+    }
+}
+
+$('#nextButton').on('click', nextPerson);
+$('#shuffleButton').on('click', shuffleQueue);
+$('#speakButton').on('click', speakCurrent);
+$('#resetButton').on('click', resetQueue);
+$('#importButton').on('click', function() {
+    $('#fileInput').click();
+});
+
+$('#togglePanelButton').on('click', togglePanel);
+
+$('#fileInput').on('change', function(e) {
+    const file = e.target.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const content = e.target.result;
+            queue = content.split('\n').filter(name => name.trim() !== '');
+            originalQueue = [...queue];
+            completedPersons = [];
+            currentIndex = -1;
+            isShuffled = false;
+            updateDisplay();
+            initSortable();
+        };
+        
+        reader.readAsText(file);
+    }
+});
+
+$(document).on('click', '.queue-item', async function() {
+    if (isProcessing) return;
+    
+    const clickedIndex = $(this).attr('data-index');
+    
+    if (clickedIndex !== undefined) {
+        isProcessing = true;
+        currentIndex = parseInt(clickedIndex);
+        const personName = queue[currentIndex];
+        $('#currentPerson').html(`<span class="label">当前：</span>${personName}`);
+        $('#nextPerson').text('');
+        await speakOnce(`请${personName}${roomName}。`);
+        completedPersons.push(queue[currentIndex]);
+        queue.splice(currentIndex, 1);
+        currentIndex = -1;
+        isProcessing = false;
+        updateDisplay();
+    }
+});
+
+function initSortable() {
+    const queueList = document.getElementById('queueList');
+    new Sortable(queueList, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        onEnd: function(evt) {
+            const oldIndex = evt.oldIndex;
+            const newIndex = evt.newIndex;
+            const movedItem = queue.splice(oldIndex, 1)[0];
+            queue.splice(newIndex, 0, movedItem);
+            
+            if (currentIndex === oldIndex) {
+                currentIndex = newIndex;
+            } else if (oldIndex < currentIndex && newIndex >= currentIndex) {
+                currentIndex--;
+            } else if (oldIndex > currentIndex && newIndex <= currentIndex) {
+                currentIndex++;
+            }
+            
+            updateDisplay();
+        }
+    });
+}
+
+$(document).on('keydown', function(e) {
+    if (e.key === "ArrowRight") {
+        nextPerson();
+    } else if (e.key === "s" || e.key === "S") {
+        speakCurrent();
+    }
+});
+
+$('#customizeButton').on('click', function() {
+    $('.customize-form').toggle();
+});
+
+$('#saveCustomization').on('click', function() {
+    roomName = $('#roomNameInput').val() || roomName;
+    callMode = $('#callModeSelect').val();
+    autoCallInterval = parseInt($('#autoCallIntervalInput').val()) || 0;
+    $('.customize-form').hide();
+    updateDisplay();
+    
+    if (callMode === 'auto' && autoCallInterval > 0) {
+        scheduleNextCall();
+    } else {
+        stopAutoCalling();
+    }
+});
+
+$('#systemTitle').on('input', function() {
+    document.title = $(this).val();
+});
+
+$('#callModeSelect').on('change', function() {
+    if ($(this).val() === 'auto') {
+        $('#autoCallIntervalInput').show();
+    } else {
+        $('#autoCallIntervalInput').hide();
+    }
+});
+
+updateDisplay();
+initSortable();
+$('#togglePanelButton').css('right', '40%');
+</script>
+</body>
+</html>
