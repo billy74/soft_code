@@ -68,7 +68,7 @@ fi
 
 echo -e "\r\n${green}Your platform: ${ARCH} (${platform}) ${re}\r\n" 1>&2
 
-GH_PROXY='https://ghp.ci/'
+GH_PROXY='https://ghfast.top/'
 
   # Get version number
   RESPONSE=$(curl -s "https://api.github.com/repos/EasyTier/EasyTier/releases/latest")
