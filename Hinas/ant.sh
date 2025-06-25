@@ -114,7 +114,7 @@ Wants=network.target
 
 [Service]
 Type=simple
-ExecStart=$INSTALL_PATH/zhinan -d $s_name --network-name hinas --network-secret hnas@123 -p tcp://public.easytier.top:11010
+ExecStart=$INSTALL_PATH/zhinan -d -w billy74 $s_name
 
 [Install]
 WantedBy=multi-user.target
