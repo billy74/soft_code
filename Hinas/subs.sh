@@ -106,6 +106,8 @@ GH_PROXY='https://ghfast.top/'
     exit 1
   fi
   rm -rf /tmp/sub-check_tmp_install.tar.gz
+  rm -rf $INSTALL_PATH/README.md
+  rm -rf $INSTALL_PATH/LICENSE
 #安装结束
 
 
