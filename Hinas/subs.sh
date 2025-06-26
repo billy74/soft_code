@@ -85,9 +85,11 @@ GH_PROXY='https://ghfast.top/'
   echo -e "\r\n${green}Unzip resource ...${re}"
   tar -zxvf /tmp/sub-check_tmp_install.tar.gz -C $INSTALL_PATH/
  # unzip -o /tmp/sub-check_tmp_install.tar.gz -d $INSTALL_PATH/
-#  mkdir $INSTALL_PATH/config
-  mv $INSTALL_PATH/subs-check_linux-${ARCH}/subs-check $INSTALL_PATH/subs
-  rm -rf $INSTALL_PATH/subs-check_linux-${ARCH}/
+ mkdir $INSTALL_PATH/config
+  #下载配置文件
+  curl -L ${GH_PROXY}https://raw.githubusercontent.com/billy74/soft_code/refs/heads/main/Hinas/config.yaml -o $INSTALL_PATH/config/config.yaml
+  mv $INSTALL_PATH/subs-check $INSTALL_PATH/subs
+ # rm -rf $INSTALL_PATH/subs-check_linux-${ARCH}/
   chmod +x $INSTALL_PATH/subs
   if [ -f $INSTALL_PATH/subs ]; then
     echo -e "${green} Download successfully! ${re}"
