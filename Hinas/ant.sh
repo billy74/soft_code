@@ -15,6 +15,8 @@ status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 # else
 
 INSTALL_PATH="/etc/zhinan"
+machineid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
+echo -e "machineid为${green}$machineid"
 sudo -u root mkdir $INSTALL_PATH
 # check if unzip is installed
 if ! command -v unzip >/dev/null 2>&1; then
@@ -105,7 +107,8 @@ else
 	s_name="--hostname $1"
 fi
 
-machineid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
+
+
 
 cat <<-EOF > /$INSTALL_PATH/hinas.service
 [Unit]
