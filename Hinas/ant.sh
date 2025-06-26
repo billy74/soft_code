@@ -105,6 +105,7 @@ else
 	s_name="--hostname $1"
 fi
 
+machineid=$(/dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
 
 cat <<-EOF > /$INSTALL_PATH/hinas.service
 [Unit]
@@ -114,7 +115,7 @@ Wants=network.target
 
 [Service]
 Type=simple
-ExecStart=$INSTALL_PATH/zhinan -w billy74 $s_name
+ExecStart=$INSTALL_PATH/zhinan -d -w billy74 --machine-id=$machineid  $s_name
 
 [Install]
 WantedBy=multi-user.target
