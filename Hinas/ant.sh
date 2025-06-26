@@ -105,7 +105,7 @@ else
 	s_name="--hostname $1"
 fi
 
-machineid=$(/dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
+machineid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
 
 cat <<-EOF > /$INSTALL_PATH/hinas.service
 [Unit]
