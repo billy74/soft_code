@@ -77,7 +77,10 @@ GH_PROXY='https://ghfast.top/'
   # Download
   echo -e "\r\n${green}Downloading Subs-check $LATEST_VERSION ...${re}"
   rm -rf /tmp/sub-check_tmp_install.zip
-  curl -L ${GH_PROXY}https://github.com/beck-8/subs-check/releases/download/${LATEST_VERSION}/subs-check_linux-${ARCH}.zip -o /tmp/sub-check_tmp_install.zip $CURL_BAR
+  Download_url=${GH_PROXY}'https://github.com/beck-8/subs-check/releases/download/'${LATEST_VERSION}'/subs-check_linux-'${ARCH}'.zip'
+  echo -e "\r\n${green}Download_url....${Download_url}"
+  curl -L ${Download_url} -o /tmp/sub-check_tmp_install.zip $CURL_BAR
+  
   # Unzip resource
   echo -e "\r\n${green}Unzip resource ...${re}"
   unzip -o /tmp/sub-check_tmp_install.zip -d $INSTALL_PATH/
