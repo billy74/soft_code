@@ -11,7 +11,7 @@ status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 INSTALL_PATH="/etc/zhinan"
 #判断文件夹是否存在
 if [ -e $INSTALL_PATH ]; then
-    echo "${green} 文件夹已存在${re}\r\n"
+    echo "${green}文件夹已存在${re}\r\n"
 else
     sudo -u root mkdir $INSTALL_PATH
 fi
