@@ -54,11 +54,11 @@ case "$platform" in
 esac
 
 # support hf
-if [[ "$ARCH" == "armv7" || "$ARCH" == "arm" ]]; then
-  if cat /proc/cpuinfo | grep Features | grep -i 'half' >/dev/null 2>&1; then
-    ARCH=${ARCH}hf
-  fi
-fi
+# if [[ "$ARCH" == "armv7" || "$ARCH" == "arm" ]]; then
+#   if cat /proc/cpuinfo | grep Features | grep -i 'half' >/dev/null 2>&1; then
+#     ARCH=${ARCH}hf
+#   fi
+# fi
 
 echo -e "\r\n${green}Your platform: ${ARCH} (${platform}) ${re}\r\n" 1>&2
 
