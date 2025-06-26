@@ -114,7 +114,7 @@ Wants=network.target
 
 [Service]
 Type=simple
-ExecStart=$INSTALL_PATH/zhinan -d -w billy74 $s_name
+ExecStart=$INSTALL_PATH/zhinan -w billy74 $s_name
 
 [Install]
 WantedBy=multi-user.target
