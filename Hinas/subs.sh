@@ -99,6 +99,7 @@ GH_PROXY='https://ghfast.top/'
   mv $INSTALL_PATH/subs-check $INSTALL_PATH/subs
  # rm -rf $INSTALL_PATH/subs-check_linux-${ARCH}/
   chmod +x $INSTALL_PATH/subs
+  chmod +x $INSTALL_PATH/config/config.yaml
   if [ -f $INSTALL_PATH/subs ]; then
     echo -e "${green} Download successfully! ${re}"
   else
