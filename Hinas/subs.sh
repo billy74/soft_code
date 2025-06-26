@@ -9,7 +9,15 @@ status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 
 
 INSTALL_PATH="/etc/zhinan"
-sudo -u root mkdir $INSTALL_PATH
+#判断文件夹是否存在
+if [ -e $INSTALL_PATH ]; then
+    echo "${green} 文件夹已存在${re} \r\n"
+else
+    sudo -u root mkdir $INSTALL_PATH
+fi
+
+
+
 # check if unzip is installed
 if ! command -v unzip >/dev/null 2>&1; then
   echo -e "\r\n${red}Error: unzip is not installed${re}\r\n"
@@ -97,13 +105,9 @@ GH_PROXY='https://ghfast.top/'
     echo -e "${red} Download failed! ${re}"
     exit 1
   fi
-  rm -rf /tmp/sub-check_tmp_install.zip
+  rm -rf /tmp/sub-check_tmp_install.tar.gz
 #安装结束
-if [ -z "$1" ]; then
-	s_name="--hostname $ip_wz"
-else
-	s_name="--hostname $1"
-fi
+
 
 
 cat <<-EOF > /$INSTALL_PATH/subs.service
