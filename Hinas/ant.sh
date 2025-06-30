@@ -10,13 +10,13 @@ status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 # if [ $# -ne 1 ]; then
    #echo "请使用:bash $0 设备名 进行使用"
    ip_wz=`curl -s -4 ping0.cc/geo | awk 'NR==2'`
-   ip_wz=${ip_wz// /}
-   echo "未使用设备名，将以 $ip_wz 命名"
+   ip_wz=${ip_wz}
+   echo -e "未使用设备名，将以${green}$ip_wz 命名...${re}"
 # else
 
 INSTALL_PATH="/etc/zhinan"
 machineid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
-echo -e "machineid为${green}$machineid"
+echo -e "machineid为${green} $machineid ${re}"
 sudo -u root mkdir $INSTALL_PATH
 # check if unzip is installed
 if ! command -v unzip >/dev/null 2>&1; then
