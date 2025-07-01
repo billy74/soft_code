@@ -1,25 +1,4 @@
 #!/bin/bash
-export LANG=en_US.UTF-8
-# 定义颜色
-re='\e[0m'
-red='\e[1;91m'
-white='\e[1;97m'
-green='\e[1;32m'
-yellow='\e[1;33m'
-purple='\e[1;35m'
-skyblue='\e[1;96m'
-gl_hui='\e[37m'
-gl_hong='\033[31m'
-gl_lv='\033[32m'
-gl_huang='\033[33m'
-gl_lan='\033[34m'
-gl_bai='\033[0m'
-gl_zi='\033[35m'
-gl_kjlan='\033[96m'
-#######################################
-
-# 获取服务状态
-
 SERVICE_NAME="hinas"
 status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 
@@ -33,22 +12,10 @@ status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 INSTALL_PATH="/etc/zhinan"
 #判断文件夹是否存在
 if [ -d "$INSTALL_PATH" ]; then
-    echo -e "\r\n${red}文件夹存在已跳过${re}\r\n"
+    echo -e "文件夹存在已跳过"
 else
-    echo  -e "\r\n${red}文件夹不存在-正在创建文件夹${re}\r\n"
+    echo  -e "文件夹不存在-正在创建文件夹"
     sudo -u root mkdir $INSTALL_PATH
-fi
-
-# check if unzip is installed
-if ! command -v unzip >/dev/null 2>&1; then
-  echo -e "\r\n${red}Error: unzip is not installed${re}\r\n"
-  exit 1
-fi
-
-# check if curl is installed
-if ! command -v curl >/dev/null 2>&1; then
-  echo -e "\r\n${red}Error: curl is not installed${re}\r\n"
-  exit 1
 fi
 
 # Get platform
@@ -89,7 +56,7 @@ if [[ "$ARCH" == "armv7" || "$ARCH" == "arm" ]]; then
   fi
 fi
 
-echo -e "\r\n${green}Your platform: ${ARCH} (${platform}) ${re}\r\n" 1>&2
+echo -e "Your platform: ${ARCH} (${platform})" 1>&2
 
 GH_PROXY='https://ghfast.top/'
 
@@ -99,12 +66,11 @@ GH_PROXY='https://ghfast.top/'
   LATEST_VERSION=$(echo -e "$LATEST_VERSION" | tr -d '[:space:]')
   LATEST_VERSION="v2.3.2"
   if [ -z "$LATEST_VERSION" ]; then
-    echo -e "\r\n${red}Opus${re}, failure to get latest version. Check your internel\r\nOr try ${green}install by band${re}\r\n"
-    exit 1
+    echo -e "Opus, failure to get latest version. Check your internel"
   fi
 
   # Download
-  echo -e "\r\n${green}Downloading EasyTier $LATEST_VERSION ...${re}"
+  echo -e "Downloading EasyTier $LATEST_VERSION ..."
   rm -rf /tmp/easytier_tmp_install.zip
   curl -L ${GH_PROXY}https://github.com/EasyTier/EasyTier/releases/latest/download/easytier-linux-${ARCH}-${LATEST_VERSION}.zip -o /tmp/easytier_tmp_install.zip $CURL_BAR
   # Unzip resource
@@ -118,7 +84,6 @@ GH_PROXY='https://ghfast.top/'
     echo -e "${green} Download successfully! ${re}"
   else
     echo -e "${red} Download failed! ${re}"
-    exit 1
   fi
   rm -rf /tmp/easytier_tmp_install.zip
 #安装结束
