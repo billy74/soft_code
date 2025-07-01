@@ -15,7 +15,14 @@ status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 # else
 
 INSTALL_PATH="/etc/zhinan"
-sudo -u root mkdir $INSTALL_PATH
+
+if [ -d "$INSTALL_PATH" ]; then
+    echo -e "\r\n${red}文件夹存在已跳过${re}\r\n"
+else
+    echo  -e "\r\n${red}文件夹不存在-正在创建文件夹${re}\r\n"
+    sudo -u root mkdir $INSTALL_PATH
+fi
+
 # check if unzip is installed
 if ! command -v unzip >/dev/null 2>&1; then
   echo -e "\r\n${red}Error: unzip is not installed${re}\r\n"
