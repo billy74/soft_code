@@ -114,9 +114,9 @@ mihomo-api-secret: ""
 save-method: r2
 
 # webdav
-webdav-url: "https://example.com/dav/"
-webdav-username: "admin"
-webdav-password: "admin"
+webdav-url: "https://pan.ahrsf.com/dav/"
+webdav-username: "admin@qq.com"
+webdav-password: "xgqcKgunKsEKt4OuQEknUjUYCFA1z2eL"
 
 # gist id
 github-gist-id: ""
@@ -133,10 +133,10 @@ worker-token: r84546241
 # 将测速结果推送到S3/Minio的地址
 s3-endpoint: "127.0.0.1:9000"
 # S3的访问凭证
-s3-access-id: "ak"
-s3-secret-key: "sk"
+s3-access-id: "fGtv1fOxFALZS8iLCIsh"
+s3-secret-key: "PEHAcI5mNW1S8FJe2AWzntyfQ6Rz617MEvvYeIS0"
 # S3的Bucket名称
-s3-bucket: "public"
+s3-bucket: "image"
 # 是否使用SSL
 s3-use-ssl: false
 # 默认自动判断dns还是path，但一些云厂商不遵循规范，所以有时需要手动设置
