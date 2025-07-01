@@ -71,7 +71,7 @@ echo -e "\r\n${green}Your platform: ${ARCH} (${platform}) ${re}\r\n" 1>&2
 GH_PROXY='https://ghfast.top/'
 
   # Get version number
-  RESPONSE=$(curl -s "https://api.github.com/repos/EasyTier/EasyTier/releases/latest")
+  RESPONSE=$(curl -s "${GH_PROXY}https://api.github.com/repos/EasyTier/EasyTier/releases/latest")
   LATEST_VERSION=$(echo "$RESPONSE" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
   LATEST_VERSION=$(echo -e "$LATEST_VERSION" | tr -d '[:space:]')
 
