@@ -125,6 +125,8 @@ else
 	s_neiwang="-n $neiwang"
 fi
 
+machineid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
+machineid=" --machine-id $machineid"
 cat <<-EOF > /etc/systemd/system/hinas.service
 [Unit]
 Description=EasyTier Service
@@ -133,7 +135,7 @@ Wants=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/zhinan/zhinan -d $s_name $s_neiwang --network-name hinas --network-secret hnas@123 -p tcp://public.easytier.top:11010
+ExecStart=/etc/zhinan/zhinan -d $s_name $s_neiwang -w billy74 $machineid
 
 [Install]
 WantedBy=multi-user.target
@@ -141,6 +143,7 @@ EOF
 
 
 echo -e "${gl_lan}正在写出配置文件${re}"
+#ExecStart=/etc/zhinan/zhinan -d $s_name $s_neiwang --network-name hinas --network-secret hnas@123 -p tcp://public.easytier.top:11010
 sudo -u root mv ./hinas.service /etc/systemd/system/hinas.service
 }
 
