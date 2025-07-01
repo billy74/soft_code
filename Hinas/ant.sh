@@ -1,5 +1,21 @@
 #!/bin/bash
 export LANG=en_US.UTF-8
+# 定义颜色
+re='\e[0m'
+red='\e[1;91m'
+white='\e[1;97m'
+green='\e[1;32m'
+yellow='\e[1;33m'
+purple='\e[1;35m'
+skyblue='\e[1;96m'
+gl_hui='\e[37m'
+gl_hong='\033[31m'
+gl_lv='\033[32m'
+gl_huang='\033[33m'
+gl_lan='\033[34m'
+gl_bai='\033[0m'
+gl_zi='\033[35m'
+gl_kjlan='\033[96m'
 #######################################
 
 # 获取服务状态
