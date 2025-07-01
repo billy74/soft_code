@@ -87,4 +87,4 @@ echo "重启服务完成"
 curl -s -4 ping0.cc/geo
 echo "显示当前网络"
 rm $0
-# fi
+
