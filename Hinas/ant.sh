@@ -97,7 +97,7 @@ GH_PROXY='https://ghfast.top/'
   RESPONSE=$(curl -s "${GH_PROXY}https://api.github.com/repos/EasyTier/EasyTier/releases/latest")
   LATEST_VERSION=$(echo "$RESPONSE" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
   LATEST_VERSION=$(echo -e "$LATEST_VERSION" | tr -d '[:space:]')
-
+  LATEST_VERSION="v2.3.2"
   if [ -z "$LATEST_VERSION" ]; then
     echo -e "\r\n${red}Opus${re}, failure to get latest version. Check your internel\r\nOr try ${green}install by band${re}\r\n"
     exit 1
