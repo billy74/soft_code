@@ -15,7 +15,7 @@ status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 # else
 
 INSTALL_PATH="/etc/zhinan"
-
+#判断文件夹是否存在
 if [ -d "$INSTALL_PATH" ]; then
     echo -e "\r\n${red}文件夹存在已跳过${re}\r\n"
 else
