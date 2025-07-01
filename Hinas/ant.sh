@@ -1,22 +1,7 @@
 #!/bin/bash
 export LANG=en_US.UTF-8
 #######################################
-# 定义颜色
-re='\e[0m'
-red='\e[1;91m'
-white='\e[1;97m'
-green='\e[1;32m'
-yellow='\e[1;33m'
-purple='\e[1;35m'
-skyblue='\e[1;96m'
-gl_hui='\e[37m'
-gl_hong='\033[31m'
-gl_lv='\033[32m'
-gl_huang='\033[33m'
-gl_lan='\033[34m'
-gl_bai='\033[0m'
-gl_zi='\033[35m'
-gl_kjlan='\033[96m'
+
 # 获取服务状态
 
 SERVICE_NAME="hinas"
@@ -26,22 +11,11 @@ status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
    #echo "请使用:bash $0 设备名 进行使用"
    ip_wz=`curl -s -4 ping0.cc/geo | awk 'NR==2'`
    ip_wz=${ip_wz// /}
-   echo -e "${green} 未使用设备名，将以$ip_wz 命名${re}"
+   echo "未使用设备名，将以 $ip_wz 命名"
 # else
 
 INSTALL_PATH="/etc/zhinan"
-machineid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
-echo -e "${green}Machineid为${green} $machineid${re}"
-
-#check file
-if [ -d "$INSTALL_PATH" ]; then
-    echo "文件夹存在"
-else
-    echo "文件夹不存在，正在创建文件夹"
-    sudo -u root mkdir $INSTALL_PATH
-fi
-
-
+sudo -u root mkdir $INSTALL_PATH
 # check if unzip is installed
 if ! command -v unzip >/dev/null 2>&1; then
   echo -e "\r\n${red}Error: unzip is not installed${re}\r\n"
@@ -131,8 +105,7 @@ else
 	s_name="--hostname $1"
 fi
 
-
-
+machineid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
 
 cat <<-EOF > /$INSTALL_PATH/hinas.service
 [Unit]
@@ -162,4 +135,3 @@ curl -s -4 ping0.cc/geo
 echo "显示当前网络"
 rm $0
 # fi
-
