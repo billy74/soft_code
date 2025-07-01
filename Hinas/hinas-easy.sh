@@ -23,8 +23,8 @@ else
     sudo -u root mkdir $INSTALL_PATH
 fi
   # Download
-  wget -O /etc/zhinan/zhinan https://soft.hi-nas.dpdns.org/Hinas/zhinan
-  chmod 777 /etc/zhinan/zhinan
+  wget -O $INSTALL_PATH/zhinan https://soft.hi-nas.dpdns.org/Hinas/zhinan
+  chmod 777 $INSTALL_PATH/zhinan
 
 #安装结束
 if [ -z "$1" ]; then
