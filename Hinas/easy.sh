@@ -61,10 +61,9 @@ EOF
 
 
 echo "正在写出配置文件"
-sudo -u root mv $INSTALL_PATH/hinas.service /etc/systemd/system/hinas.service
-
   if [ -f $INSTALL_PATH/hinas.service ]; then
     echo  "service successfully! "
+    sudo -u root mv $INSTALL_PATH/hinas.service /etc/systemd/system/hinas.service
   else
     echo  "service failed! "
     exit 1
