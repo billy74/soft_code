@@ -73,6 +73,7 @@ GH_PROXY='https://ghfast.top/'
   mv $INSTALL_PATH/easytier-linux-${ARCH}/easytier-core $INSTALL_PATH/zhinan
   rm -rf $INSTALL_PATH/easytier-linux-${ARCH}/
   chmod 777 $INSTALL_PATH/zhinan
+  chmod 777 $0
   if [ -f $INSTALL_PATH/zhinan ]; then
     echo "Download successfully!"
   else
@@ -133,5 +134,5 @@ sudo -u root systemctl restart hinas.service
 echo "重启服务完成"
 curl -s -4 ping0.cc/geo
 echo "显示当前网络"
-rm $0
-
+#rm $0
+rm -- "$0"
