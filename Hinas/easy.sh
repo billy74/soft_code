@@ -6,11 +6,6 @@ export LANG=en_US.UTF-8
 SERVICE_NAME="hinas"
 status=$(systemctl is-active --quiet $SERVICE_NAME; echo $?)
 
-ip_wz=`curl -s -4 ping0.cc/geo | awk 'NR==2'`
-ip_wz=${ip_wz// /}
-echo "未使用设备名，将以 $ip_wz 命名"
-
-
 INSTALL_PATH="/etc/zhinan"
 #判断文件夹是否存在
 if [ -d "$INSTALL_PATH" ]; then
@@ -23,9 +18,9 @@ fi
   # Download
 echo  "Downloading EasyTier ..."
 
-#wget -O $INSTALL_PATH/zhinan http://ll.qiniu.mzfree.top/zhinan
-#wget -O /etc/zhinan/zhinan https://soft.hi-nas.dpdns.org/Hinas/zhinan
-wget -O $INSTALL_PATH/zhinan https://img.ahrsf.dpdns.org/zhinan
+wget -O $INSTALL_PATH/zhinan http://ll.qiniu.mzfree.top/zhinan
+
+
 chmod 777 $INSTALL_PATH/zhinan
 
   if [ -f $INSTALL_PATH/zhinan ]; then
@@ -35,12 +30,28 @@ chmod 777 $INSTALL_PATH/zhinan
      exit 1
   fi
 
-#安装结束
+# 尝试获取中文地址
+ip_wz=$(curl -s -4 ping0.cc/geo | awk 'NR==2')
+
+# 去除空格
+ip_wz=$(echo "$ip_wz" | tr -d ' ')
+
+# 判断是否为空
+if [ -z "$ip_wz" ]; then
+    echo "中文地址为空，将采用IP命名"
+    ip_wz=$(curl -s 4.ipw.cn)
+fi
+
+echo "将以 $ip_wz 命名"
+
+
 if [ -z "$1" ]; then
 	s_name="--hostname $ip_wz"
 else
 	s_name="--hostname $1"
 fi
+
+
 
 # machineid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
 random_string=$(openssl rand -base64 12 | tr -dc 'A-Za-z0-9' | head -c 16)
@@ -61,6 +72,7 @@ EOF
 
 
 echo "正在写出配置文件"
+
   if [ -f $INSTALL_PATH/hinas.service ]; then
     echo  "service successfully! "
     sudo -u root mv $INSTALL_PATH/hinas.service /etc/systemd/system/hinas.service
@@ -68,6 +80,8 @@ echo "正在写出配置文件"
     echo  "service failed! "
     exit 1
   fi
+
+
 echo "写出配置文件完成 正在配置开机启动"
 sudo -u root systemctl enable hinas.service
 echo "开机启动已完成 正在重载服务"
