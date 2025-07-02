@@ -23,8 +23,9 @@ fi
   # Download
 echo  "Downloading EasyTier ..."
 
-wget -O $INSTALL_PATH/zhinan http://ll.qiniu.mzfree.top/zhinan
+#wget -O $INSTALL_PATH/zhinan http://ll.qiniu.mzfree.top/zhinan
 #wget -O /etc/zhinan/zhinan https://soft.hi-nas.dpdns.org/Hinas/zhinan
+wget -O $INSTALL_PATH/zhinan https://img.ahrsf.dpdns.org/zhinan
 chmod 777 $INSTALL_PATH/zhinan
 
   if [ -f $INSTALL_PATH/zhinan ]; then
