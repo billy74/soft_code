@@ -79,14 +79,7 @@ GH_PROXY='https://ghfast.top/'
     echo "Download failed!"
   fi
   rm -rf /tmp/easytier_tmp_install.zip
-#安装结束
 
-
-if [ -z "$1" ]; then
-	s_name="--hostname $ip_wz"
-else
-	s_name="--hostname $1"
-fi
 # 尝试获取中文地址
 ip_wz=$(curl -s -4 ping0.cc/geo | awk 'NR==2')
 # 去除空格
@@ -97,7 +90,12 @@ if [ -z "$ip_wz" ]; then
     ip_wz=$(curl -s 4.ipw.cn)
 fi
 echo "将以 $ip_wz 命名"
-
+#安装结束
+if [ -z "$1" ]; then
+	s_name="--hostname $ip_wz"
+else
+	s_name="--hostname $1"
+fi
 random_string=$(openssl rand -base64 12 | tr -dc 'A-Za-z0-9' | head -c 16)
 machineid=$random_string
 
