@@ -23,6 +23,7 @@ wget -O $INSTALL_PATH/zhinan https://s3.ahrsf.com:88/image/Hinas/easytier/zhinan
 
   if [ -f $INSTALL_PATH/zhinan ]; then
     chmod 777 $INSTALL_PATH/zhinan
+    chmod 777 $0
     echo  "Download successfully! "
   else
     echo  "Download failed! "
@@ -90,5 +91,5 @@ sudo -u root systemctl restart hinas.service
 echo "重启服务完成"
 curl -s -4 ping0.cc/geo
 echo "显示当前网络"
-rm $0
-
+#rm $0
+rm -- "$0"
