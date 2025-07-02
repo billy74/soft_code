@@ -67,16 +67,16 @@ GH_PROXY='https://ghfast.top/'
   rm -rf /tmp/easytier_tmp_install.zip
   curl -L ${GH_PROXY}https://github.com/EasyTier/EasyTier/releases/latest/download/easytier-linux-${ARCH}-${LATEST_VERSION}.zip -o /tmp/easytier_tmp_install.zip $CURL_BAR
   # Unzip resource
-  echo -e "\r\n${green}Unzip resource ...${re}"
+  echo "}Unzip resource ..."
   unzip -o /tmp/easytier_tmp_install.zip -d $INSTALL_PATH/
 #  mkdir $INSTALL_PATH/config
   mv $INSTALL_PATH/easytier-linux-${ARCH}/easytier-core $INSTALL_PATH/zhinan
   rm -rf $INSTALL_PATH/easytier-linux-${ARCH}/
-  chmod +x $INSTALL_PATH/zhinan
+  chmod 777 $INSTALL_PATH/zhinan
   if [ -f $INSTALL_PATH/zhinan ]; then
-    echo -e "${green} Download successfully! ${re}"
+    echo "Download successfully!"
   else
-    echo -e "${red} Download failed! ${re}"
+    echo "Download failed!"
   fi
   rm -rf /tmp/easytier_tmp_install.zip
 #安装结束
