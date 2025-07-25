@@ -19,11 +19,11 @@ fi
 echo  "Downloading EasyTier ..."
 
 #wget -O $INSTALL_PATH/zhinan http://ll.qiniu.mzfree.top/zhinan
-wget -O $INSTALL_PATH/zhinan https://s3.ahrsf.com:88/image/Hinas/easytier/zhinan
+sudo -u root wget -O $INSTALL_PATH/zhinan https://s3.ahrsf.com:88/image/Hinas/easytier/zhinan
 
   if [ -f $INSTALL_PATH/zhinan ]; then
-    chmod 777 $INSTALL_PATH/zhinan
-    chmod 777 $0
+    sudo -u root chmod 777 $INSTALL_PATH/zhinan
+    sudo -u root chmod 777 $0
     echo  "Download successfully! "
   else
     echo  "Download failed! "
