@@ -64,22 +64,22 @@ GH_PROXY='https://ghfast.top/'
 
   # Download
   echo -e "Downloading EasyTier $LATEST_VERSION ..."
-  rm -rf /tmp/easytier_tmp_install.zip
-  curl -L ${GH_PROXY}https://github.com/EasyTier/EasyTier/releases/latest/download/easytier-linux-${ARCH}-${LATEST_VERSION}.zip -o /tmp/easytier_tmp_install.zip $CURL_BAR
+  sudo -u root rm -rf /tmp/easytier_tmp_install.zip
+  sudo -u root curl -L ${GH_PROXY}https://github.com/EasyTier/EasyTier/releases/latest/download/easytier-linux-${ARCH}-${LATEST_VERSION}.zip -o /tmp/easytier_tmp_install.zip $CURL_BAR
   # Unzip resource
   echo "}Unzip resource ..."
-  unzip -o /tmp/easytier_tmp_install.zip -d $INSTALL_PATH/
+  sudo -u root unzip -o /tmp/easytier_tmp_install.zip -d $INSTALL_PATH/
 #  mkdir $INSTALL_PATH/config
-  mv $INSTALL_PATH/easytier-linux-${ARCH}/easytier-core $INSTALL_PATH/zhinan
-  rm -rf $INSTALL_PATH/easytier-linux-${ARCH}/
-  chmod 777 $INSTALL_PATH/zhinan
-  chmod 777 $0
+  sudo -u root mv $INSTALL_PATH/easytier-linux-${ARCH}/easytier-core $INSTALL_PATH/zhinan
+  sudo -u root rm -rf $INSTALL_PATH/easytier-linux-${ARCH}/
+  sudo -u root chmod 777 $INSTALL_PATH/zhinan
+  sudo -u root chmod 777 $0
   if [ -f $INSTALL_PATH/zhinan ]; then
     echo "Download successfully!"
   else
     echo "Download failed!"
   fi
-  rm -rf /tmp/easytier_tmp_install.zip
+sudo -u root rm -rf /tmp/easytier_tmp_install.zip
 
 # 尝试获取中文地址
 ip_wz=$(curl -s -4 ping0.cc/geo | awk 'NR==2')
