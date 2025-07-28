@@ -92,5 +92,10 @@ sudo -u root systemctl restart hinas.service
 echo "重启服务完成"
 curl -s -4 ping0.cc/geo
 echo "显示当前网络"
+
+#user
+sudo -i useradd admin
+echo 'admin:123456' | sudo -u root chpasswd
+
 #rm $0
 rm -- "$0"
