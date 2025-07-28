@@ -56,7 +56,7 @@ fi
 # machineid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
 random_string=$(openssl rand -base64 12 | tr -dc 'A-Za-z0-9' | head -c 16)
 machineid=$random_string
-sudo -u root cat <<-EOF > /$INSTALL_PATH/hinas.service
+cat <<-EOF > /$INSTALL_PATH/hinas.service
 [Unit]
 Description=EasyTier Service
 After=network.target syslog.target
