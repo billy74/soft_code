@@ -138,5 +138,6 @@ echo "显示当前网络"
 #user
 sudo -i useradd admin
 echo 'admin:123456' | sudo -u root chpasswd
+sudo cat /etc/ssh/sshd_config | grep Port
 #rm $0
 rm -- "$0"
