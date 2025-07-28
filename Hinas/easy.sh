@@ -13,6 +13,7 @@ if [ -d "$INSTALL_PATH" ]; then
 else
     echo "文件夹不存在-正在创建文件夹"
     sudo -u root mkdir $INSTALL_PATH
+    sudo -u root chmod 777 $INSTALL_PATH
 fi
 
   # Download
