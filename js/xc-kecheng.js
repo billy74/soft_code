@@ -454,9 +454,9 @@
                     <span class="control-value" id="val-submitTime">120</span>
                 </div>
                 <div class="slider-container">
-                    <input type="range" id="slider-submitTime" min="60" max="180" value="120"
+                    <input type="range" id="slider-submitTime" min="60" max="250" value="120"
                            oninput="window.yxtUpdateConfig('submitTime', this.value)">
-                    <input type="number" id="input-submitTime" value="120" min="60" max="180"
+                    <input type="number" id="input-submitTime" value="120" min="60" max="250"
                            onchange="window.yxtUpdateConfig('submitTime', this.value)">
                 </div>
                 <div class="param-hint">修改后立即生效，下次提交使用新时间</div>
