@@ -423,11 +423,6 @@
                 <button class="quick-btn" onclick="window.yxtTestOnce()">单次测试</button>
             </div>
             
-            <div class="quick-actions">
-                <button class="quick-btn" onclick="window.yxtFillCommentNow()" style="background: rgba(0,212,255,0.2);">📝 立即填评论</button>
-                <button class="quick-btn" onclick="window.yxtFindCommentModal()">🔍 查找弹窗</button>
-            </div>
-            
             <div class="control-group">
                 <div class="control-label">
                     <span>💬 自动评论</span>
@@ -1716,61 +1711,6 @@
             addLog('💬 自动评论已禁用', 'info');
         }
     };
-    
-    // 手动触发评论填写
-    window.yxtFillCommentNow = function() {
-        addLog('📝 手动触发评论填写...', 'info');
-        autoFillComment();
-    };
-    
-    // 查找评论弹窗（诊断用）
-    window.yxtFindCommentModal = function() {
-        addLog('🔍 开始查找评论弹窗...', 'info');
-        
-        const modalSelectors = [
-            '.el-dialog__wrapper',
-            '.el-dialog',
-            '[class*="dialog"]',
-            '[class*="modal"]',
-            '.yxt-comment-dialog',
-            '.comment-modal'
-        ];
-        
-        let found = false;
-        for (const selector of modalSelectors) {
-            const elements = document.querySelectorAll(selector);
-            addLog(`  检查 ${selector}: 找到 ${elements.length} 个元素`, 'info');
-            
-            for (let i = 0; i < elements.length; i++) {
-                const el = elements[i];
-                const text = el.textContent || '';
-                const visible = isElementVisible(el);
-                addLog(`    [${i}] 可见:${visible} | 内容:"${text.substring(0, 50)}..."`, 'info');
-                
-                if ((text.includes('课程评论') || text.includes('评价') || text.includes('评分')) && visible) {
-                    addLog(`    ✅ 找到可见的评论弹窗!`, 'success');
-                    found = true;
-                    
-                    // 列出弹窗内的所有表单元素
-                    const inputs = el.querySelectorAll('input, textarea, button');
-                    addLog(`    弹窗内有 ${inputs.length} 个表单元素:`, 'info');
-                    inputs.forEach((input, idx) => {
-                        const tag = input.tagName.toLowerCase();
-                        const type = input.type || '';
-                        const className = input.className.substring(0, 30);
-                        const inputText = input.textContent || input.value || '';
-                        addLog(`      ${idx}. <${tag}${type ? ' type="'+type+'"' : ''} class="${className}"> "${inputText.substring(0, 20)}"`, 'info');
-                    });
-                }
-            }
-        }
-        
-        if (!found) {
-            addLog('⚠️ 未找到可见的评论弹窗', 'error');
-            addLog('提示: 如果弹窗已出现但未被检测到，请尝试点击"立即填评论"按钮', 'info');
-        }
-    };
-    
 
     
     // 初始化状态
