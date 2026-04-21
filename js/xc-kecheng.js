@@ -10,16 +10,16 @@
     // ==================== 默认配置 ====================
     const DEFAULT_CONFIG = {
         interval: {
-            base: 20,
-            min: 15,
-            max: 45,
-            randomRange: 3
+            base: 15,       // 接近服务端~45s冷却窗口，提高每次命中率
+            min: 12,
+            max: 25,
+            randomRange: 2
         },
         submitTime: {
-            base: 120,
-            min: 60,
-            max: 180,
-            randomRange: 5
+            base: 50,      // 稳超40秒上限，确保每次有效提交都打满
+            min: 45,
+            max: 60,
+            randomRange: 3
         },
         speed: {
             min: 5,
@@ -27,9 +27,9 @@
             current: 8
         },
         adjust: {
-            successDecrease: 2,
-            failIncrease: 5,
-            consecutiveFailLimit: 3
+            successDecrease: 1,
+            failIncrease: 3,
+            consecutiveFailLimit: 5
         }
     };
     
@@ -487,6 +487,14 @@
                 <div class="status-item">
                     <span class="status-label">下次提交:</span>
                     <span class="status-value" id="status-next">--</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">今日学习:</span>
+                    <span class="status-value" style="color:#00ff88;" id="status-today">--</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">本月学习:</span>
+                    <span class="status-value" style="color:#ffcc00;" id="status-month">--</span>
                 </div>
             </div>
             
@@ -1047,6 +1055,216 @@
         });
     }
     
+    // ==================== 学习时长读取（API + DOM双方案） ====================
+    /**
+     * 通过 API 获取学习时长（单位：秒）
+     * 接口：POST /ssp/hour/history/self/statistics
+     * 请求头：token (JWT), source: 501, x-yxt-product: xxv2
+     * 请求体：{ startDate, endDate, orgId, sourceType: -1 }
+     */
+    
+    const DURATION_API = 'https://api-phx-tc.yunxuetang.cn/ssp/hour/history/self/statistics';
+    let durationCache = { todaySec: null, monthSec: null, lastFetch: 0 };
+    
+    function getDurationToken() {
+        return localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+    }
+
+    /** 从 JWT token 解析 orgId */
+    function getOrgIdFromToken() {
+        try {
+            const token = getDurationToken();
+            if (!token) return '';
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.orgId || '';
+        } catch(e) { return ''; }
+    }
+
+    /**
+     * POST 调用统计接口获取指定时间范围内的总学时（秒）
+     * @param {string} start - 开始日期 "YYYY-MM-DD HH:mm:ss"
+     * @param {string} end - 结束日期 "YYYY-MM-DD HH:mm:ss"
+     * @returns {Promise<number|null>} 秒数，失败返回null
+     */
+    function fetchStudySeconds(start, end) {
+        return new Promise((resolve) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', DURATION_API, true);
+            xhr.withCredentials = true;
+            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            xhr.setRequestHeader('Accept', 'application/json');
+            
+            const token = getDurationToken();
+            if (token) xhr.setRequestHeader('token', token);  // header名是 "token"
+            xhr.setRequestHeader('source', '501');
+            xhr.setRequestHeader('x-yxt-product', 'xxv2');
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    try {
+                        const d = JSON.parse(xhr.responseText);
+                        resolve(d.totalStudyHour != null ? d.totalStudyHour : null);
+                    } catch(e) { resolve(null); }
+                } else {
+                    console.warn(`[时长API] ${start}~${end} → ${xhr.status}:`, xhr.responseText.substring(0, 100));
+                    resolve(null);
+                }
+            };
+            xhr.onerror = (e) => { console.warn('[时长API] 网络错误:', e); resolve(null); };
+
+            const orgId = getOrgIdFromToken();
+            xhr.send(JSON.stringify({
+                startDate: start,
+                endDate: end,
+                orgId: orgId,
+                sourceType: -1,
+                keyword: '',
+                userId: ''
+            }));
+        });
+    }
+
+    /** 获取今日和本月学习时长（秒），带60s缓存 */
+    async function fetchDurationData() {
+        const now = Date.now();
+        if (durationCache.lastFetch && (now - durationCache.lastFetch < 60000)) {
+            return { today: durationCache.todaySec, month: durationCache.monthSec };
+        }
+
+        const t = new Date();
+        const ds = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+        const ms = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-01`;
+        const me = new Date(t.getFullYear(), t.getMonth() + 1, 0);
+        const meStr = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(me.getDate()).padStart(2,'0')}`;
+
+        const [todaySec, monthSec] = await Promise.all([
+            fetchStudySeconds(`${ds} 00:00:00`, `${ds} 23:59:59`),
+            fetchStudySeconds(`${ms} 00:00:00`, `${meStr} 23:59:59`)
+        ]);
+
+        durationCache.todaySec = todaySec;
+        durationCache.monthSec = monthSec;
+        durationCache.lastFetch = now;
+
+        return { today: todaySec, month: monthSec };
+    }
+
+    /** DOM 回退方案：在 /learning/duration 页面时直接读DOM（返回分钟） */
+    function getStudyDurationFromDOM() {
+        const containers = document.querySelectorAll('.learning-duration-topdiv');
+        if (!containers.length) return { today: null, month: null };
+
+        let result = { today: null, month: null };
+        for (const container of containers) {
+            const labels = container.querySelectorAll(
+                '.standard-size-16.yxtf-weight-4, [class*="color-gray"], span'
+            );
+            for (const label of labels) {
+                const text = label.textContent.trim();
+                let key = /今日/.test(text) ? 'today' : (/本月/.test(text) ? 'month' : null);
+                if (key && result[key] == null) {
+                    let parent = label.parentElement;
+                    let valueParent = parent?.parentElement || parent;
+                    if (valueParent) {
+                        const valEl = valueParent.querySelector('[class*="mt12"][class*="learning-duration"]');
+                        if (valEl) {
+                            const num = parseFloat(valEl.textContent.trim().replace(/,/g, ''));
+                            if (!isNaN(num)) result[key] = num; // 分钟
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /** 格式化：>10000视为秒，否则视为分钟 */
+    function formatMinutes(secondsOrMin) {
+        if (secondsOrMin == null || isNaN(secondsOrMin)) return '--';
+        const sec = secondsOrMin > 10000 ? secondsOrMin : Math.floor(secondsOrMin * 60);
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        if (h > 0) return `${h}h${m}m`;
+        return `${m}m`;
+    }
+
+    /** 强制刷新指定元素的显示（绕过可能的渲染缓存） */
+    function forceRepaint(el) {
+        if (!el) return;
+        // 先移除再重新添加，强制浏览器重排
+        const parent = el.parentNode;
+        if (parent) {
+            const nextSibling = el.nextSibling;
+            parent.removeChild(el);
+            if (nextSibling) {
+                parent.insertBefore(el, nextSibling);
+            } else {
+                parent.appendChild(el);
+            }
+        }
+        // 触发 reflow
+        void el.offsetHeight;
+    }
+
+    /** 更新面板时长显示：API优先，失败时DOM回退 */
+    let _lastTodayText = '';
+    let _lastMonthText = '';
+    async function updateDurationDisplay() {
+        const todayEl = document.getElementById('status-today');
+        const monthEl = document.getElementById('status-month');
+        if (!todayEl || !monthEl) {
+            console.warn('[时长] 找不到 status-today 或 status-month 元素');
+            return;
+        }
+
+        try {
+            // 方案1：API获取（秒）
+            const apiResult = await fetchDurationData();
+            if (apiResult.today != null) {
+                const newText = formatMinutes(apiResult.today);
+                todayEl.textContent = newText;
+                todayEl.title = `今日 ${Math.round(apiResult.today)} 秒 (${new Date().toLocaleTimeString()})`;
+                const changed = newText !== _lastTodayText;
+                console.log(`[时长] 今日: ${apiResult.today}s → ${newText}` + (changed ? ' ✅已更新' : ' (未变)'));
+                if (changed) {
+                    _lastTodayText = newText;
+                    forceRepaint(todayEl);
+                }
+            } else throw new Error('API无今日数据');
+            if (apiResult.month != null) {
+                const newText = formatMinutes(apiResult.month);
+                monthEl.textContent = newText;
+                monthEl.title = `本月 ${Math.round(apiResult.month)} 秒 (${new Date().toLocaleTimeString()})`;
+                const changed = newText !== _lastMonthText;
+                console.log(`[时长] 本月: ${apiResult.month}s → ${newText}` + (changed ? ' ✅已更新' : ' (未变)'));
+                if (changed) {
+                    _lastMonthText = newText;
+                    forceRepaint(monthEl);
+                }
+            } else throw new Error('API无本月数据');
+        } catch(e) {
+            console.warn(`[时长] API获取失败: ${e.message}，尝试DOM回退`);
+            // 方案2：DOM回退（分钟）
+            try {
+                const domResult = getStudyDurationFromDOM();
+                todayEl.textContent = formatMinutes(domResult.today);
+                monthEl.textContent = formatMinutes(domResult.month);
+                todayEl.title = domResult.today != null ? domResult.today + ' 分钟' : '未获取到';
+                monthEl.title = domResult.month != null ? domResult.month + ' 分钟' : '未获取到';
+                console.log(`[时长] DOM回退:`, domResult);
+            } catch(e2) {
+                todayEl.textContent = '--';
+                monthEl.textContent = '--';
+                console.error(`[时长] DOM也失败: ${e2.message}`);
+            }
+        }
+    }
+
+    // 定时刷新（每30秒），缩短间隔让增长更明显
+    setInterval(() => updateDurationDisplay(), 30000);
+    // 首次立即执行一次
+    updateDurationDisplay();
+
     // ==================== 更新状态显示 ====================
     function updateStatus() {
         const player = getPlayer();
