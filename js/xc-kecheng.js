@@ -291,36 +291,12 @@
             color: #ff416c;
         }
         
-        #yxt-control-panel .quick-actions {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        #yxt-control-panel .quick-btn {
-            flex: 1;
-            padding: 8px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            color: #8892b0;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        #yxt-control-panel .quick-btn:hover {
-            background: rgba(0,212,255,0.2);
-            border-color: #00d4ff;
-            color: #fff;
-        }
-        
         #yxt-control-panel .log-area {
             margin-top: 10px;
             padding: 8px 10px;
             background: rgba(0,0,0,0.4);
             border-radius: 6px;
-            max-height: 160px;
+            max-height: 320px;
             overflow-y: auto;
             font-family: 'Consolas', 'Monaco', monospace;
             font-size: 10px;
@@ -417,12 +393,6 @@
         </div>
         
         <div class="panel-content" id="panel-content">
-            <div class="quick-actions">
-                <button class="quick-btn" onclick="window.yxtResetConfig()">重置默认</button>
-                <button class="quick-btn" onclick="window.yxtCheckStatus()">查看状态</button>
-                <button class="quick-btn" onclick="window.yxtTestOnce()">单次测试</button>
-            </div>
-            
             <div class="control-group">
                 <div class="control-label">
                     <span>💬 自动评论</span>
@@ -622,24 +592,6 @@
                 break;
 
         }
-    };
-    
-    // ==================== 重置配置 ====================
-    window.yxtResetConfig = function() {
-        currentConfig = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-        currentInterval = DEFAULT_CONFIG.interval.base;
-        
-        document.getElementById('slider-interval').value = DEFAULT_CONFIG.interval.base;
-        document.getElementById('input-interval').value = DEFAULT_CONFIG.interval.base;
-        document.getElementById('val-interval').textContent = DEFAULT_CONFIG.interval.base;
-        
-        document.getElementById('slider-submitTime').value = DEFAULT_CONFIG.submitTime.base;
-        document.getElementById('input-submitTime').value = DEFAULT_CONFIG.submitTime.base;
-        document.getElementById('val-submitTime').textContent = DEFAULT_CONFIG.submitTime.base;
-        
-
-        
-        addLog('🔄 已重置为默认配置，下次提交生效', 'info');
     };
     
     // ==================== 获取 Player ====================
@@ -1286,14 +1238,61 @@
         }
     }
     
-    // ==================== 提交函数 ====================
-    async function doSubmit() {
-        // 如果刚关闭过重复课程弹窗，跳过本次提交，等待页面恢复
-        if (isJustClosedDuplicateModal()) {
-            addLog('⏳ 刚关闭重复课程提示，等待页面恢复，跳过本次提交', 'info');
-            return true; // 返回true不计入失败
+    // ==================== 弹窗管理 ====================
+    // 提取为独立函数，供 doSubmit 在提交前后调用
+    const MODAL_SELECTOR = '.yxtf-dialog__wrapper, .el-dialog__wrapper, [class*="dialog__wrapper"]';
+    
+    /**
+     * 清理页面上的非评论弹窗（重复课程提示等）
+     * @returns {number} 关闭的弹窗数量
+     */
+    function clearNonCommentModals() {
+        let closedCount = 0;
+        const seen = new Set(); // 去重，防止嵌套选择器匹配同一弹窗
+        
+        const modals = document.querySelectorAll(MODAL_SELECTOR);
+        for (const m of modals) {
+            if (!isElementVisible(m)) continue;
+            if (seen.has(m)) continue;
+            
+            const mText = (m.textContent || '').trim().substring(0, 80);
+            const isComment = mText.includes('课程评论') || mText.includes('课程评价');
+            
+            // 只处理非评论弹窗
+            if (!isComment && mText.length > 2) {
+                seen.add(m);
+                
+                // 优先点击"确定"按钮（重复课程弹窗需要确认而非关闭）
+                let handled = false;
+                const allBtns = m.querySelectorAll('button, [class*="button"], [role="button"], .el-button, .yxtf-button');
+                for (const btn of allBtns) {
+                    const btnText = (btn.textContent || '').trim();
+                    if (btnText === '确定' || btnText === 'OK' || btnText === '是') {
+                        btn.click();
+                        closedCount++;
+                        addLog(`🔒 已点「${btnText}」关闭弹窗`, 'info');
+                        handled = true;
+                        break;
+                    }
+                }
+                
+                // 没有确定按钮则尝试关闭按钮
+                if (!handled) {
+                    const closeBtn = m.querySelector('[class*="close"], [class*="Close"]');
+                    if (closeBtn) {
+                        closeBtn.click();
+                        closedCount++;
+                        addLog(`🔒 已关闭弹窗: "${mText.substring(0, 30)}"`, 'info');
+                    }
+                }
+            }
         }
         
+        return closedCount;
+    }
+    
+    // ==================== 提交函数 ====================
+    async function doSubmit() {
         const player = getPlayer();
         if (!player) {
             addLog('未找到 Player 组件', 'error');
@@ -1353,11 +1352,34 @@
             }
             
             if (submitMethod) {
+                // 【关键】提交前先清理弹窗，防止弹窗阻断提交逻辑
+                const preCleared = clearNonCommentModals();
+                if (preCleared > 0) {
+                    addLog(`🧹 提交前已清理 ${preCleared} 个弹窗`, 'info');
+                    await new Promise(r => setTimeout(r, 300)); // 等DOM稳定
+                }
+                
+                const t0 = Date.now();
+                const preProgress = player.kngDetail?.schedule;
+                addLog(`⏱️ submitMethod() [${preProgress}%]...`, 'info');
+                
                 submitMethod();
                 
-                // 等待响应 - 如果刚关闭弹窗，多等一会儿
-                const waitTime = isJustClosedDuplicateModal() ? 3000 : 1000;
-                await new Promise(resolve => setTimeout(resolve, waitTime));
+                const t1 = Date.now();
+                addLog(`⏱️ 同步返回 ${t1-t0}ms, 等待异步...`, 'info');
+                
+                // 等待响应
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const t2 = Date.now();
+                addLog(`⏱️ 总耗时 ${t2-t0}ms`, 'info');
+                
+                // 提交后再次清理（submitMethod 可能又触发了新弹窗）
+                const postCleared = clearNonCommentModals();
+                if (postCleared > 0) {
+                    addLog(`🧹 提交后清理 ${postCleared} 个弹窗（submitMethod触发）`, 'info');
+                    await new Promise(r => setTimeout(r, 300));
+                }
                 
                 // 重新获取Player，确保获取最新状态
                 const freshPlayer = getPlayer();
@@ -1631,38 +1653,6 @@
         updateStatus();
     };
     
-    window.yxtCheckStatus = function() {
-        const player = getPlayer();
-        if (!player) {
-            addLog('未找到 Player 组件', 'error');
-            return;
-        }
-        
-        const kngDetail = player.kngDetail || {};
-        const detail = player.detail || {};
-        const hasNext = hasNextKng();
-        
-        addLog(`课件: ${kngDetail.title || '未知'}`, 'info');
-        addLog(`当前课件进度: ${kngDetail.schedule || 0}% | 课程总进度: ${detail.schedule || 0}%`, 'info');
-        addLog(`课程总课件数: ${kngDetail.sumNum || 0} | 是否有下一课: ${hasNext}`, 'info');
-        addLog(`当前配置: 间隔${currentConfig.interval.base}秒 | 时间${currentConfig.submitTime.base}秒 | 倍率8x`, 'info');
-        updateStatus();
-    };
-    
-    window.yxtTestOnce = async function() {
-        const player = getPlayer();
-        if (!player) {
-            addLog('未找到 Player 组件', 'error');
-            return;
-        }
-        
-        addLog('执行单次测试提交...', 'info');
-        addLog(`使用配置: 间隔${currentConfig.interval.base}秒 | 时间${currentConfig.submitTime.base}秒 | 倍率8x`, 'info');
-        submitCount++;
-        await doSubmit();
-        updateStatus();
-    };
-    
     // ==================== 自动评论功能 ====================
     // 判断元素是否可见（兼容 fixed/absolute 定位，不能用 offsetParent）
     function isElementVisible(el) {
@@ -1851,12 +1841,6 @@
                 addLog('⚠️ 未找到发表按钮', 'error');
             }
         }, 1000);
-    }
-    
-    // 检查是否刚关闭过重复课程弹窗（3秒内）- 保留供doSubmit使用
-    let duplicateModalClosedTime = 0;
-    function isJustClosedDuplicateModal() {
-        return (Date.now() - duplicateModalClosedTime) < 3000;
     }
     
     // 启动评论弹窗监听
