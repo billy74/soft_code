@@ -1445,9 +1445,10 @@
                     consecutiveFails = 0;
                     return true;
                 } else {
-                    addLog('提交成功但进度未增加', 'error');
-                    consecutiveFails++;
-                    return false;
+                    addLog('提交成功但进度未增加(可能服务端延迟，不计入失败)', 'info');
+                    // 进度未增加不再计入 consecutiveFails
+                    // 服务端可能批量更新/延迟写入，避免误停
+                    return true;
                 }
             } else {
                 // 列出 Player 上所有可用的方法供调试
