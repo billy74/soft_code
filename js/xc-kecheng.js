@@ -293,14 +293,14 @@
         
         #yxt-control-panel .log-area {
             margin-top: 10px;
-            padding: 8px 10px;
+            padding: 6px 8px;
             background: rgba(0,0,0,0.4);
             border-radius: 6px;
-            max-height: 320px;
+            max-height: 160px;
             overflow-y: auto;
             font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 10px;
-            line-height: 1.4;
+            font-size: 9px;
+            line-height: 1.3;
         }
         
         #yxt-control-panel .log-entry {
@@ -488,7 +488,7 @@
         logArea.scrollTop = logArea.scrollHeight;
         
         // 限制日志数量
-        while (logArea.children.length > 20) {
+        while (logArea.children.length > 80) {
             logArea.removeChild(logArea.firstChild);
         }
     }
@@ -1291,6 +1291,43 @@
         return closedCount;
     }
     
+    // ==================== 视频播放控制 ====================
+    /**
+     * 暂停视频，防止原生播放器自动提交与面板提交冲突
+     * @returns {{video, wasPlaying}} 用于恢复
+     */
+    function pauseVideoForSubmit() {
+        const video = document.querySelector('video');
+        if (video && !video.paused) {
+            video.pause();
+            return { video, wasPlaying: true };
+        }
+        const p = getPlayer();
+        if (p && typeof p.pause === 'function') {
+            try { p.pause(); } catch(e) {}
+            return { video: null, wasPlaying: true };
+        }
+        return { video: null, wasPlaying: false };
+    }
+    
+    /**
+     * 恢复视频播放
+     */
+    function restoreVideoPlayback(info) {
+        if (!info.wasPlaying) return;
+        if (info.video) {
+            try { info.video.play(); } catch(e) {
+                info.video.muted = true;
+                info.video.play().catch(() => {});
+            }
+            return;
+        }
+        const p = getPlayer();
+        if (p && typeof p.play === 'function') {
+            try { p.play(); } catch(e) {}
+        }
+    }
+    
     // ==================== 提交函数 ====================
     async function doSubmit() {
         const player = getPlayer();
@@ -1352,11 +1389,17 @@
             }
             
             if (submitMethod) {
-                // 【关键】提交前先清理弹窗，防止弹窗阻断提交逻辑
+                // ① 暂停视频，避免原生播放器自动提交与面板冲突
+                const vidInfo = pauseVideoForSubmit();
+                if (vidInfo.wasPlaying) {
+                    addLog(`⏸️ 已暂停视频`, 'info');
+                }
+                
+                // ② 提交前清理已有弹窗
                 const preCleared = clearNonCommentModals();
                 if (preCleared > 0) {
-                    addLog(`🧹 提交前已清理 ${preCleared} 个弹窗`, 'info');
-                    await new Promise(r => setTimeout(r, 300)); // 等DOM稳定
+                    addLog(`🧹 清理 ${preCleared} 个弹窗`, 'info');
+                    await new Promise(r => setTimeout(r, 300));
                 }
                 
                 const t0 = Date.now();
@@ -1374,12 +1417,23 @@
                 const t2 = Date.now();
                 addLog(`⏱️ 总耗时 ${t2-t0}ms`, 'info');
                 
-                // 提交后再次清理（submitMethod 可能又触发了新弹窗）
-                const postCleared = clearNonCommentModals();
-                if (postCleared > 0) {
-                    addLog(`🧹 提交后清理 ${postCleared} 个弹窗（submitMethod触发）`, 'info');
-                    await new Promise(r => setTimeout(r, 300));
+                // ③ 提交后只记录弹窗（不主动关闭），让服务端正常处理重复课程提示
+                const postModals = document.querySelectorAll(MODAL_SELECTOR);
+                let hasDupModal = false;
+                for (const m of postModals) {
+                    if (!isElementVisible(m)) continue;
+                    const mText = (m.textContent || '').trim();
+                    const isComment = mText.includes('课程评论') || mText.includes('课程评价');
+                    if (!isComment && mText.length > 2) {
+                        hasDupModal = true;
+                        addLog(`💬 弹窗存在: "${mText.substring(0, 40)}"（保留）`, 'info');
+                        break; // 只记录一次即可
+                    }
                 }
+                
+                // ④ 恢复视频播放
+                restoreVideoPlayback(vidInfo);
+                addLog(`▶️ 已恢复视频`, 'info');
                 
                 // 重新获取Player，确保获取最新状态
                 const freshPlayer = getPlayer();
