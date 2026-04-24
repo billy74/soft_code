@@ -6,12 +6,12 @@
         return;
     }
     
-    // ==================== 启动流程 ==========
+ 
     const WEBHOOK_URL = 'https://seazen.feishu.cn/base/workflow/webhook/event/Heggazbx6wkMpGhjieEcy3qSnSh';
     const AUTH_URL = 'https://yunkt.ahrsf.cc.cd/';
     const currentUserName = localStorage.getItem('fullname') || '';
 
-    /** 推送一次 webhook（纯发送，不依赖面板） */
+
     function pushWebhookOnce(extra) {
         const blob = new Blob([JSON.stringify({
             event_type: 'study_progress',
