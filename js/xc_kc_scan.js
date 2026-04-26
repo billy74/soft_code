@@ -1,6 +1,6 @@
 (function() {
-    // 1. 判断当前页面域名
-    var currentDomain = window.location.hostname; // 获取当前页面的域名[2](@ref)[5](@ref)
+    
+    var currentDomain = window.location.hostname; 
     
     // 如果当前域名不以 xcsxy.yunxuetang.cn 结尾（包含主域名及其子域名）
     if (!currentDomain.endsWith('yunxuetang.cn') || !currentDomain.includes('xcsxy')) {
