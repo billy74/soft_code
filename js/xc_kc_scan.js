@@ -1,17 +1,12 @@
 (function() {
-    
     var currentDomain = window.location.hostname; 
     
-    // 如果当前域名不以 xcsxy.yunxuetang.cn 结尾（包含主域名及其子域名）
     if (!currentDomain.endsWith('yunxuetang.cn') || !currentDomain.includes('xcsxy')) {
-        // 弹窗提示
-        var goRedirect = confirm('⚠️ 检测到当前不在学习系统有效域名内！\n请在E学界面进行操作。\n\n点击"确定"立即跳转至学习主页。');
+        var goRedirect = confirm('⚠️ 检测到当前不在学习系统有效域名内！\n请前往 新城E学 页面进行操作。\n\n点击"确定"立即跳转至学习主页。');
         
         if (goRedirect) {
-            // 用户点击确认后，自动跳转到指定网址[6](@ref)[7](@ref)
             window.location.href = 'https://xcsxy.yunxuetang.cn/study/#/userhome';
         }
-        // 无论是否跳转，均中断后续脚本的执行，防止在不正确的域名下生成面板
         return; 
     }
 
@@ -25,12 +20,12 @@
 
     var style = document.createElement('style');
     style.id = 'yx-panel-style';
-    style.textContent = "#yx-panel{position:fixed;top:50%;right:10px;transform:translateY(-50%);width:360px;height:88vh;background:rgba(255,255,255,0.95);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.2);z-index:99999;display:flex;flex-direction:column;overflow:hidden;font-family:'Microsoft YaHei',sans-serif;color:#333}#yx-header{padding:10px;background:#1890ff;color:white;font-weight:bold;font-size:14px;display:flex;justify-content:space-between;align-items:center}#yx-close-btn{background:transparent;border:none;color:white;font-size:18px;cursor:pointer;line-height:1;padding:0 2px}#yx-close-btn:hover{color:#ff4d4f}#yx-controls{padding:10px;background:#f0f2f5;border-bottom:1px solid #ddd;display:flex;gap:10px;align-items:center}#yx-page-input{width:60px;padding:6px;border:1px solid #ccc;border-radius:4px;text-align:center;font-size:12px}#yx-fetch-btn{flex:1;padding:8px;background:#52c41a;color:white;border:none;border-radius:4px;cursor:pointer;font-size:13px;font-weight:bold}#yx-fetch-btn:hover{background:#389e0d}#yx-fetch-btn:disabled{background:#87d068;cursor:not-allowed}#yx-content{flex:1;overflow-y:auto;padding:10px;font-size:12px}.yx-card{background:#fafafa;border:1px solid #eee;border-radius:4px;padding:8px;margin-bottom:8px;line-height:1.5}.yx-title{font-weight:bold;color:#1890ff;text-decoration:none;display:block;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.yx-tag{display:inline-block;padding:1px 4px;border-radius:2px;font-size:10px;margin-right:4px}.yx-tag.todo{background:#fff1f0;color:#f5222d;border:1px solid #ffa39e}.yx-tag.done{background:#f6ffed;color:#52c41a;border:1px solid #b7eb8f}.yx-tag.exam{background:#e6f7ff;color:#1890ff;border:1px solid #91d5ff}";
+    style.textContent = "#yx-panel{position:fixed;top:50%;right:10px;transform:translateY(-50%);width:360px;height:88vh;background:rgba(255,255,255,0.95);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.2);z-index:99999;display:flex;flex-direction:column;overflow:hidden;font-family:'Microsoft YaHei',sans-serif;color:#333}#yx-header{padding:10px;background:#1890ff;color:white;font-weight:bold;font-size:14px;display:flex;justify-content:space-between;align-items:center}#yx-close-btn{background:transparent;border:none;color:white;font-size:18px;cursor:pointer;line-height:1;padding:0 2px}#yx-close-btn:hover{color:#ff4d4f}#yx-controls{padding:10px;background:#f0f2f5;border-bottom:1px solid #ddd;display:flex;gap:10px;align-items:center}#yx-page-input{width:60px;padding:6px;border:1px solid #ccc;border-radius:4px;text-align:center;font-size:12px}#yx-fetch-btn{flex:1;padding:8px;background:#52c41a;color:white;border:none;border-radius:4px;cursor:pointer;font-size:13px;font-weight:bold;white-space:pre-line;}#yx-fetch-btn:hover{background:#389e0d}#yx-fetch-btn:disabled{background:#87d068;cursor:not-allowed}#yx-content{flex:1;overflow-y:auto;padding:10px;font-size:12px}.yx-card{background:#fafafa;border:1px solid #eee;border-radius:4px;padding:8px;margin-bottom:8px;line-height:1.5}.yx-title{font-weight:bold;color:#1890ff;text-decoration:none;display:block;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.yx-tag{display:inline-block;padding:1px 4px;border-radius:2px;font-size:10px;margin-right:4px}.yx-tag.todo{background:#fff1f0;color:#f5222d;border:1px solid #ffa39e}.yx-tag.done{background:#f6ffed;color:#52c41a;border:1px solid #b7eb8f}.yx-tag.exam{background:#e6f7ff;color:#1890ff;border:1px solid #91d5ff}";
     document.head.appendChild(style);
 
     var panel = document.createElement('div');
     panel.id = 'yx-panel';
-    panel.innerHTML = '<div id="yx-header"><span>云学堂选课助手</span><button id="yx-close-btn" title="关闭并销毁面板">×</button></div><div id="yx-controls"><span style="font-size:12px;white-space:nowrap;">扫描页数:</span><input type="number" id="yx-page-input" value="5" min="1" max="50"><button id="yx-fetch-btn">开始全量扫描</button></div><div id="yx-content"><div style="text-align:center;color:#888;margin-top:20px;">设置页数后点击按钮开始获取</div></div>';
+    panel.innerHTML = '<div id="yx-header"><span>课程扫描助手</span><button id="yx-close-btn" title="关闭并销毁面板">×</button></div><div id="yx-controls"><span style="font-size:12px;white-space:nowrap;">扫描页数:</span><input type="number" id="yx-page-input" value="5" min="1" max="50"><button id="yx-fetch-btn">开始全量扫描</button></div><div id="yx-content"><div style="text-align:center;color:#888;margin-top:20px;">设置页数后点击按钮开始获取</div></div>';
     document.body.appendChild(panel);
 
     document.getElementById('yx-close-btn').addEventListener('click', function() {
@@ -228,7 +223,9 @@
                 contentArea.appendChild(card);
             }
 
-            fetchBtn.textContent = '🎉 扫描完毕！\n待学:' + todoCount + ' 含考:' + examCount;
+            // 采用模板字符串换行，并去除原先的括号
+            fetchBtn.textContent = `🎉 扫描完毕！
+待学: ${todoCount} 含考: ${examCount}`;
 
         } catch (error) {
             contentArea.innerHTML = '<div style="color:red;">数据加载失败: ' + error.message + '</div>';
