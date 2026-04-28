@@ -60,7 +60,7 @@
         var treeApiUrl = 'https://api-phx-tc.yunxuetang.cn/kng/study/tree';
         var treeRequestBody = JSON.stringify({
             "courseId": courseId,
-            "studyParam": {"originOrgId": "", "previewType": 0},
+            "studyParam": {"originOrgId": "", "previewType": ""},
             "targetCode": "kng",
             "targetId": "",
             "targetParam": {"taskId": "", "projectId": "", "flipId": "", "batchId": ""},
